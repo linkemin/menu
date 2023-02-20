@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>在线选餐</title>
+    <link rel="stylesheet" href="/bootstrap.min.css">
+    <link rel="stylesheet" href="/h-ui/css/H-ui.css">
+    <script type="text/javascript" src="/jquery-1.12.4.min.js"></script>
+    <script type="text/javascript" src="/h-ui/js/H-ui.js"></script>
+    <script type="text/javascript" src="/lib/layer/2.4/layer.js"></script>
+
+    <script type="text/javascript" src="/clipboard.min.js"></script>
+    <style>
+        body{
+            background-color: #fdba83;
+            background-image: linear-gradient(to right, #f3d8d8, #fdba83);
+        }
+        #menu1,#menu3,#menu2,#menu4,#menu5{
+            width: 29%!important;
+            font-size: 35px;
+            font-weight: bold;
+            font-family: '楷体';
+            width: 97%!important;
+            float: left;
+            border-bottom: 4px dashed #45748d;
+            padding: 25px 0px;
+            margin-left: 35px;
+        }
+        ul{
+            width: 100%;
+        }
+        ul li{
+            list-style: none;
+            font-size: 35px;
+            font-weight: bold;
+            font-family: '楷体';
+        }
+        .div_menu li{
+            margin: 3px 0px;
+            padding: 0px 10px;
+            position: relative;
+            width: 320px;
+            float: left;
+            display: block;
+            margin-right: 150px;
+        }
+        .selected{
+            border-radius: 14px;
+            padding: 0px 10px;
+            background-color: #59a6f3;
+        }
+        #user_list p{
+            font-size: 40px;
+            font-weight: bold;
+            text-align: center;
+            padding-bottom: 20px;
+            border-bottom: 2px #1a3f28 solid;
+        }
+        #user_list span{
+            font-size: 40px;
+            font-weight: bold;
+            text-align: center;
+            padding: 20px;
+            border: 2px #1a3f28 solid;
+            display: inline-block;
+            width: 50%;
+        }
+        .layui-layer-title{
+            height:80px;
+            line-height:80px;
+            text-align: center;
+            font-size:34px;
+            background: #374151;
+            font-weight: bold;
+            color: white;
+        }
+
+        .navbar-black{
+            background-color: #374151;
+        }
+        .header_text{
+            color: white;
+            display: inline-block;
+            line-height: 100px!important;
+            font-size: 25px;
+            margin-right: 50px!important;
+        }
+
+        .layui-layer-content{
+            font-size: 35px!important;
+            line-height: 50px!important;
+            background: #e6e6e6;
+        }
+        #marquee_div{
+            background-color: #ecf5ff;
+            position: absolute;
+            width: 100%;
+        }
+        marquee{
+            height: 50px;
+            font-size: 30px;
+            width: 88%;
+        }
+        .Huispinner{
+            position: absolute;
+            bottom: 12px;
+            left: 330px;
+            font-size: 16px;
+        }
+        .Huispinner a{
+            height: 45px;
+            line-height: 45px;
+            width: 45px;
+            font-size: 40px;
+        }
+        .Huispinner input{
+            height: 45px!important;
+            font-size: 25px;
+        }
+        .spinner{
+            width: 130px;
+        }
+        .kind_title{
+            border-radius: 13px;
+            padding: 5px 50px;
+            margin: 0px 32%;
+            text-align: center;
+            background-color: #9d6f6f;
+            color: white;
+        }
+
+    </style>
+</head>
+<body>
+    <header class="navbar-wrapper">
+        <div class="navbar navbar-black" style="height: 100px;margin-bottom: 0px;">
+            <div class="container cl" style="width: 800px!important;">
+                <img src="/dc2.png" style="width: 45px;margin-right: 30px;">
+                <a class="header_text" >点餐系统</a>
+                <a class="header_text" onclick="myOrder()">查看我的订单</a>
+                <a id="user" class="header_text" style="float: right!important;margin-right: 0px!important;text-align: right;" onclick="to_login()">请选择用户</a>
+            </div>
+        </div>
+    </header>
+    <div id="marquee_div">
+        <img src="/laba.png" style="width: 45px;margin: 0 30px;float: left;display: inline-block;margin-top: 7px;">
+        <marquee direction="left" scrollamount="14" id="marquee">上新品啦---->【汉堡】<---&nbsp;&nbsp;&nbsp;&nbsp;上新品啦--->【三文治-厚切双拼】<---</marquee>
+    </div>
+    <img class="bj" src="/banner.png" style="height: 100%;width: 100%">
+    <div id="menu1" class="div_menu" name="三文治" style="">
+        <div class="kind_title">三文治</div>
+    </div>
+    <div id="menu3" class="div_menu" name="饭团" style="">
+        <div class="kind_title">饭团</div>
+    </div>
+    <div id="menu2" class="div_menu" name="台湾手卷饭团" style="">
+        <div class="kind_title">台湾手卷饭团</div>
+    </div>
+    <div id="menu5" class="div_menu" name="汉堡" style="">
+        <div class="kind_title">汉堡</div>
+    </div>
+    <div id="menu4" class="div_menu" name="豆浆" style="">
+        <div class="kind_title">豆浆</div>
+    </div>
+
+    <button id="btn_submit" style="height: 100px;width: 300px;background: #56bb6c; border-radius: 10px; margin-top: 15px;font-size: 30px;margin-left: 100px;margin-top: 50px;">提交</button>
+
+    <div id="Huispinner-demo1"></div>
+    <input id="test" value="" style="width: 1px;height: 1px;">
+
+
+</body>
+<script>
+    var url = decodeURI(location.search); //获取url中"?"符后的字串 ?vm_id=2
+    var userId;
+    var cookieUserId = getCookie("userId");
+    $(function () {
+        if(url.indexOf("?") != -1) {
+            str = url.substr(1);
+            strs = str.split("=");
+            userId = strs[1];
+        }
+        if (userId){
+            $.post('/menu/userName', {userId: userId}, function (data) {
+                setUserInfo(data);
+                $('#user').attr('user_id',userId);
+            })
+        }else if (cookieUserId){
+            $.post('/menu/userName', {userId: cookieUserId}, function (data) {
+                setUserInfo(data);
+                $('#user').attr('user_id',cookieUserId);
+            })
+        }
+    });
+
+    function setUserInfo(data){
+        if (data.favorite && data.favorite != null){
+            $('#user').html(data.userName + '<br>' + '('+ data.favorite + ')');
+            $('#user').css('cssText', 'line-height:50px!important;float:right;margin-right:0px!important;text-align: right;');
+            $('#user').attr('favorite', data.favorite);
+        }else {
+            $('#user').html(data.userName);
+            $('#user').css('cssText', 'line-height:100px!important;float:right;margin-right:0px!important;text-align: right;');
+        }
+        $('#user').attr('userName', data.userName);
+        $('#user').attr('mobile', data.mobile);
+    }
+
+    //加载菜单
+    $.ajax({
+        url: '/menu/getGoodsType',
+        method: 'get',
+        async: false,
+        success: function (data) {
+            $.each(data, function (i, item) {
+                var $ul = $('<ul id="ul"' + item.id + '></ul>')
+                $.each(item.goods, function (j, item2) {
+                    if (item2.goodsName.indexOf("售罄") > -1){
+                        return;
+                    }
+                    if (item2.id <= 400){
+                        $ul.append('<li value="' + item2.id + '">' +
+                            '<div class="li_div">&nbsp;' +
+                            '<div style="float: left">+' + item2.goodsName + '</div>' +
+                            '<div class="price" style="float: right">' + item2.goodsprice +  '元</div>' +
+                            '</div>' +
+                            '<div class="Huispinner" id="Huispinner_' + item2.id + '" style="float: right;display: none;"></div>' +
+                            '</li>')
+                    }else {
+                        $ul.append('<li value="' + item2.id + '">' +
+                            '<div class="li_div">&nbsp;' +
+                            '<div style="float: left">' + item2.goodsName + '</div>' +
+                            '<div class="price" style="float: right">' + item2.goodsprice +  '元</div>' +
+                            '</div>' +
+                            '<div class="Huispinner" id="Huispinner_' + item2.id + '" style="float: right;display: none;"></div>' +
+                            '</li>')
+                    }
+                })
+                $('#menu' + item.id).append($ul);
+            })
+            $(".Huispinner").Huispinner(
+                {
+                    value:1,
+                    minValue:1,
+                    maxValue:99,
+                    dis:1,
+                },
+                function(data){
+                    // alert("回调");
+                }
+            );
+        }
+    })
+    
+    $('.li_div').click(function(){
+        if ($(this).parents('li').attr('selected')){
+            //取消选择，隐藏数量
+            $(this).parents('li').removeAttr('selected');
+            $(this).parents('li').removeClass('selected');
+            $(this).parents('li').find('.Huispinner').hide();
+        }else {
+            //选择菜品，显示数量
+            $(this).parents('li').attr('selected', 'true');
+            $(this).parents('li').addClass('selected');
+            $(this).parents('li').find('.Huispinner').show();
+        }
+        var $li = $('li[selected=selected]');
+        if ($li.length == 0){
+            $('#amount').html('');
+        } else {
+            var text = '';
+            var amount = 0;
+            $.each($li, function (i, item) {
+                var t = $(item).html();
+                var type = $(item).parent().parent().attr('name');
+                amount += parseInt(t.replace(/[^0-9]/ig, ""));
+                t = t.replace(/(&nbsp;)+/ig, type + '&nbsp;&nbsp;')
+                text += t + '<br>';
+            })
+            $('#amount').html(amount);
+        }
+        // layer.tips("<span style='color:#000;'>说明：只能选择阿毛我，哈哈哈</span>", this, {tips:[2,'#fff'],time:0,area: 'auto',maxWidth:500});
+    });
+    var clipboard = new ClipboardJS('.btn');
+    clipboard.on('success', function (e) {
+        alert('已复制');
+        console.log(e);
+    });
+
+    clipboard.on('error', function (e) {
+        console.log(e);
+    });
+
+    //获取所有用户
+    $('#btn_submit').click(function() {
+        if ($('#user').attr('user_id')){
+            //已登录
+            submitOrder();
+        }else{
+            //未登录
+            var $html = $('<div></div>');
+            var $html2 = $('<div id="user_list"></div>');
+            var temp = $('<div></div>');
+            $.ajax({
+                url: "/menu/getUser",
+                method: "GET",
+                dataType:"json",
+                async: false,
+                success: function (data) {
+                    $.each(data, function (i, item) {
+                        if ((i != 0 && i % 2 == 0)){
+                            $html2.append(temp);
+                            temp = $('<div></div>')
+                        }
+                        temp.append('<span value="' + item.id + '"' +' name="' + item.userName  +'" onclick="clickName(this, true)" style="margin: 10px 0px">' + item.userCode + '---' + item.userName + '</span>');
+                        if (i == (data.length - 1)){
+                            $html2.append(temp);
+                        }
+                    })
+                }
+            });
+            $html.append($html2);
+
+            layer.open({
+                title: '你是谁？',
+                type: 1,
+                content: $html.html(),
+                area: ['600px', '1000px']
+            })
+        }
+
+    })
+
+    //点击右上角请登录，或者已登录的人名
+    function to_login() {
+        var $html = $('<div></div>');
+        var $html2 = $('<div id="user_list"></div>');
+        var temp = $('<div></div>');
+        $.ajax({
+            url: "/menu/getUser",
+            method: "GET",
+            dataType:"json",
+            async: false,
+            success: function (data) {
+                $.each(data, function (i, item) {
+                    if ((i != 0 && i % 2 == 0)){
+                        $html2.append(temp);
+                        temp = $('<div></div>')
+                    }
+                    temp.append('<span value="' + item.id + '"' +' name="' + item.userName  +'" onclick="clickName(this, false)" style="margin: 10px 0px">' + item.userCode + '---' + item.userName + '</span>');
+                    if (i == (data.length - 1)){
+                        $html2.append(temp);
+                    }
+                })
+            }
+        });
+        $html.append($html2);
+
+        layer.open({
+            title: '你是谁？',
+            type: 1,
+            content: $html.html(),
+            area: ['600px', '1000px']
+        })
+    }
+
+    //登录后点击用户
+    function clickName(p, isFromSubmit){
+        $('#user').html($(p).attr('name'));
+        $('#user').attr('user_id', $(p).attr('value'));
+        layer.closeAll();
+        if (isFromSubmit){
+            //如果来自提交按钮
+            submitOrder();
+        }
+        setCookie("userId", $(p).attr('value'), 365);
+        // document.cookie = "userId="+$(p).attr('value') + ";expires=15/05/2099 00:00:00";
+    }
+
+    function clickNameToUserDetail(p){
+        var userId = $(p).attr('value');
+        window.location.href="/page/consoleUser?userId="+userId;
+    }
+
+    function getData(){
+        var $li = $('li[selected=selected]');
+        if ($li.length == 0){
+            return undefined;
+        }
+        var dataArray = new Array();
+        $.each($li, function (i, item) {
+            dataArray.push({id : $(item).attr('value'), num: $(item).find('.Huispinner input').val()});
+        })
+        return JSON.stringify(dataArray);
+    }
+
+    function getDataName(){
+        var $li = $('li[selected=selected]');
+        if ($li.length == 0){
+            return undefined;
+        }
+        var text = '';
+        $.each($li, function (i, item) {
+            var $ele = $(item);
+            var $div = $(item).children().children().eq(0)
+            if ($ele.attr('value') < 400){
+                text += $div.text().substr(1, $div.text().length) + $ele.parent().parent().attr('name') + ' X' + $(item).find('.Huispinner input').val() +'\n';
+            }else {
+                text += $div.text() + '\n';
+            }
+        })
+        return text;
+    }
+
+    function submitOrder() {
+        layer.load();
+        var orderData = getData();
+        if (!orderData){
+            alert('请先选择需要购买的商品后再提交！')
+            layer.closeAll();
+        }else {
+            $.ajax({
+                url: '/menu/saveOrder',
+                method: 'post',
+                data: {orderData: orderData, id: $('#user').attr('user_id')},
+                success: function(data){
+                    layer.closeAll();
+                    if (data.exists == 'true'){
+                        var data = JSON.parse(data.order);
+                        var text = '';
+                        text += '您今天已经下过单啦，是否需要更换下单内容？\n';
+                        text += '下单时间：' + formatTs(data.ts) + '\n';
+                        text += '=====================\n';
+                        $.each(data.orderBs, function (index, item) {
+                            text += item.goods.goodsName + item.goods.goodsType.name + ' X' + item.num + '\n';
+                        });
+                        text += '=====================\n';
+                        text += '↓↓↓↓↓↓更换为↓↓↓↓↓↓\n';
+                        text += '=====================\n';
+                        var dataName = getDataName();
+                        text += dataName;
+                        text += '=====================\n';
+
+                        //更换下单
+                        if (confirm(text)){
+                            $.ajax({
+                                url: '/menu/modifyOrder',
+                                method: 'post',
+                                data: {orderData: orderData, id: $('#user').attr('user_id'), orderId: data.id},
+                                success: function(data){
+                                    confirm('下单成功！');
+                                },
+                                error: function (data) {
+                                    alert(data);
+                                }
+                            })
+                        }
+                    }else{
+                        confirm('下单成功！');
+                    }
+                },
+                error: function (data) {
+                    layer.closeAll();
+                    alert(data);
+                }
+            })
+            layer.closeAll();
+        }
+    }
+
+
+    function myOrder() {
+        if ($('#user').attr('user_id')){
+            var userId = $('#user').attr('user_id');
+            window.location.href="/page/consoleUser?userId="+userId;
+        }else {
+            var $html = $('<div></div>');
+            var $html2 = $('<div id="user_list"></div>');
+            var temp = $('<div></div>');
+            $.ajax({
+                url: "/menu/getUser",
+                method: "GET",
+                dataType:"json",
+                async: false,
+                success: function (data) {
+                    $.each(data, function (i, item) {
+                        if ((i != 0 && i % 2 == 0)){
+                            $html2.append(temp);
+                            temp = $('<div></div>')
+                        }
+                        temp.append('<span value="' + item.id + '"' +' name="' + item.userName  +'" onclick="clickNameToUserDetail(this, false)" style="margin: 10px 0px">' + item.userCode + '---' + item.userName + '</span>');
+                        if (i == (data.length - 1)){
+                            $html2.append(temp);
+                        }
+                    })
+                }
+            });
+            $html.append($html2);
+            layer.open({
+                title: '你是谁？',
+                type: 1,
+                content: $html.html(),
+                area: ['600px', '1000px']
+            })
+        }
+    }
+
+    function formatTs(datetime){
+        var date = new Date(datetime);//时间戳为10位需*1000，时间戳为13位的话不需乘1000
+        var year = date.getFullYear(),
+            month = ("0" + (date.getMonth() + 1)).slice(-2),
+            sdate = ("0" + date.getDate()).slice(-2),
+            hour = ("0" + date.getHours()).slice(-2),
+            minute = ("0" + date.getMinutes()).slice(-2),
+            second = ("0" + date.getSeconds()).slice(-2);
+        // 拼接
+        var result = year + "-"+ month +"-"+ sdate +" "+ hour +":"+ minute +":" + second;
+        // 返回
+        return result;
+    }
+
+    function setCookie(c_name,value,expiredays){
+        var exdate=new Date()
+        exdate.setDate(exdate.getDate()+expiredays)
+        document.cookie=c_name + "=" +escape(value)+ ((expiredays==null) ? "" : ";expires="+exdate.toGMTString())
+    }
+
+    function getCookie(cookie_name) {
+        var allcookies = document.cookie;
+        //索引长度，开始索引的位置
+        var cookie_pos = allcookies.indexOf(cookie_name);
+
+
+        // 如果找到了索引，就代表cookie存在,否则不存在
+        if (cookie_pos != -1) {
+            // 把cookie_pos放在值的开始，只要给值加1即可
+            //计算取cookie值得开始索引，加的1为“=”
+            cookie_pos = cookie_pos + cookie_name.length + 1;
+            //计算取cookie值得结束索引
+            var cookie_end = allcookies.indexOf(";", cookie_pos);
+
+
+            if (cookie_end == -1) {
+                cookie_end = allcookies.length;
+
+
+            }
+            //得到想要的cookie的值
+            var value = unescape(allcookies.substring(cookie_pos, cookie_end));
+        }
+        return value;
+    }
+
+</script>
+</html>

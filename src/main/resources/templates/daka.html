@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Fake打卡</title>
+    <link rel="stylesheet" href="/bootstrap.min.css">
+    <link rel="stylesheet" href="/h-ui/css/H-ui.css">
+    <script type="text/javascript" src="/jquery-1.12.4.min.js"></script>
+<!--    <script type="text/javascript" src="/h-ui/js/H-ui.js"></script>-->
+    <script type="text/javascript" src="/lib/layer/2.4/layer.js"></script>
+
+    <style>
+        body{
+            background-color: #f1fdf6;
+            background-image: linear-gradient(to right, #efe1f2, #f1fdf6);
+        }
+        ul{
+            width: 100%;
+        }
+        ul li{
+            list-style: none;
+            font-size: 35px;
+            font-weight: bold;
+            font-family: '楷体';
+        }
+        .div_menu li{
+            margin: 3px 0px;
+            padding: 0px 10px;
+            position: relative;
+            width: 320px;
+            float: left;
+            display: block;
+            margin-right: 150px;
+        }
+        .selected{
+            border-radius: 14px;
+            padding: 0px 10px;
+            background-color: #59a6f3;
+        }
+        #user_list p{
+            font-size: 40px;
+            font-weight: bold;
+            text-align: center;
+            padding-bottom: 20px;
+            border-bottom: 2px #1a3f28 solid;
+        }
+        #user_list span{
+            font-size: 40px;
+            font-weight: bold;
+            text-align: center;
+            padding: 20px;
+            border: 2px #1a3f28 solid;
+            display: inline-block;
+            width: 50%;
+        }
+        .layui-layer-title{
+            height:80px;
+            line-height:80px;
+            text-align: center;
+            font-size:34px;
+            background: #374151;
+            font-weight: bold;
+            color: white;
+        }
+
+        .navbar-black{
+            background-color: #374151;
+        }
+        .header_text{
+            color: white;
+            display: inline-block;
+            line-height: 100px!important;
+            font-size: 25px;
+            margin-right: 50px!important;
+        }
+
+        .layui-layer-content{
+            font-size: 35px!important;
+            line-height: 50px!important;
+            background: #e6e6e6;
+        }
+        #marquee_div{
+            background-color: #ecf5ff;
+            position: absolute;
+            width: 100%;
+        }
+        marquee{
+            height: 50px;
+            font-size: 30px;
+            width: 88%;
+        }
+        .Huispinner{
+            position: absolute;
+            bottom: 12px;
+            left: 330px;
+            font-size: 16px;
+        }
+        .Huispinner a{
+            height: 45px;
+            line-height: 45px;
+            width: 45px;
+            font-size: 40px;
+        }
+        .Huispinner input{
+            height: 45px!important;
+            font-size: 25px;
+        }
+        .spinner{
+            width: 130px;
+        }
+        .kind_title{
+            border-radius: 13px;
+            padding: 5px 50px;
+            margin: 0px 32%;
+            text-align: center;
+            background-color: #9d6f6f;
+            color: white;
+        }
+
+        /*开关样式*/
+        input[type='checkbox']{
+            -webkit-appearance:none;
+            margin:50px;
+            border:10px solid #c1c1c1;
+            border-radius:50px;
+            width:170px; height:70px;
+            background: #888;
+            position:relative;
+            box-shadow:0 0 10px 1px #3f3f3f inset;/* 为盒子添加向内阴影 */
+            transition:0.6s;/* 添加过渡效果 */
+        }
+        input[type='checkbox']:checked{
+            background: #6FB500;/* 对被勾选的checkbox进行背景改变 */
+        }
+        input[type='checkbox']::after{
+            content:"";
+            display:block;
+            width:60px; height:60px;
+            position:absolute;
+            left:-5px; top:-5px;
+            border-radius:30px;
+            background: linear-gradient(to bottom , #d3d3d3 , #9e9e9e);
+            box-shadow:0px 2px 2px 0px #eee inset, 2px 1px 2px 0px #333;/* 为开关上部设置向内白色高光，为下部设置向外阴影 */
+            transition:0.6s;/* 添加过渡效果 */
+        }
+        input[type='checkbox']:checked::after{
+            left:95px;/* 改变开关的位置，将其移至最右边 */
+        }
+    </style>
+</head>
+<body>
+    <header class="navbar-wrapper">
+        <div class="navbar navbar-black" style="height: 100px;margin-bottom: 0px;">
+            <div class="container cl" style="width: 800px!important;">
+                <a class="header_text" >Fake打卡</a>
+                <a class="header_text" style="margin-right: 0px!important;text-align: right;margin-left: 100px;" onclick="regHttpinfo()">更换打卡Http报文</a>
+                <a id="user" class="header_text" style="float: right!important;margin-right: 0px!important;text-align: right;" onclick="to_login()">请选择用户</a>
+            </div>
+        </div>
+    </header>
+    <div id="marquee_div">
+        <img src="/laba.png" style="width: 45px;margin: 0 30px;float: left;display: inline-block;margin-top: 7px;">
+        <marquee direction="left" scrollamount="14" id="marquee">请使用Fiddler抓取请求【https://yonbip-core1.diwork.com/yonbip-hr-attendsign/attentance/encryptSignIn】</marquee>
+    </div>
+    <div class="switch" style="margin-top: 100px;text-align: right;">
+        <a style="text-align: center;font-weight: bold;font-size: 41px;margin-top: 200px;color: #f61818;vertical-align: middle;">定时打卡开关→</a>
+        <input type="checkbox" id="scheduled">
+    </div>
+    <div class="switch" style="text-align: right;">
+        <a style="text-align: center;font-weight: bold;font-size: 26px;color: #f61818;vertical-align: middle;position: relative;bottom: 33px;">（周一至周五，早上8-9点、下午18-19点随机打卡）</a>
+    </div>
+    <div>
+        <h1 id="title1" style="text-align: center;font-weight: bold;font-size: 41px;margin-top: 50px;">上次打卡时间：</h1>
+        <h1 id="title2" style="text-align: center;font-weight: bold;font-size: 41px;"></h1>
+        <h1 style="text-align: center;font-weight: bold;font-size: 41px;margin-top: 80px;">上次打卡报文：</h1>
+        <h1 id="title3" style="text-align: center;font-weight: bold;font-size: 41px;"></h1>
+    </div>
+    <div>
+        <button id="btn_submit" style="height: 300px;width: 300px;background: #609cf2;font-size: 30px;margin-left: 36%;margin-top: 16%;border-radius: 50%;color: white;font-weight: bold;font-size: 44px;border-color: white;">打卡</button>
+    </div>
+
+    <div id="Huispinner-demo1"></div>
+    <input id="test" value="" style="width: 1px;height: 1px;">
+
+
+</body>
+<script>
+    var url = decodeURI(location.search); //获取url中"?"符后的字串 ?vm_id=2
+    var userId;
+    var cookieUserId = getCookie("userId");
+    $(function () {
+        if(url.indexOf("?") != -1) {
+            str = url.substr(1);
+            strs = str.split("=");
+            userId = strs[1];
+        }
+        if (userId){
+            $.post('/menu/userName', {userId: userId}, function (data) {
+                setUserInfo(data);
+                $('#user').attr('user_id',userId);
+            })
+        }else if (cookieUserId){
+            $.post('/menu/userName', {userId: cookieUserId}, function (data) {
+                setUserInfo(data);
+                $('#user').attr('user_id',cookieUserId);
+            })
+            //再获取用户上次打卡时间
+            getHttpinfo();
+        }
+
+    });
+
+    $('#scheduled').click(function(){
+        var isCheck = $('#scheduled').is(":checked");
+        $.ajax({
+            url: '/daka/saveScheduled',
+            method: 'post',
+            data: {userId: $('#user').attr('user_id'), scheduled: isCheck},
+            success: function(data){
+            },
+            error: function (data) {
+            }
+        })
+    })
+
+
+    function setUserInfo(data){
+        if (data.favorite && data.favorite != null){
+            $('#user').html(data.userName + '<br>' + '('+ data.favorite + ')');
+            $('#user').css('cssText', 'line-height:50px!important;float:right;margin-right:0px!important;text-align: right;');
+            $('#user').attr('favorite', data.favorite);
+        }else {
+            $('#user').html(data.userName);
+            $('#user').css('cssText', 'line-height:100px!important;float:right;margin-right:0px!important;text-align: right;');
+        }
+        $('#user').attr('userName', data.userName);
+        $('#user').attr('mobile', data.mobile);
+    }
+
+    //点击右上角请登录，或者已登录的人名
+    function to_login() {
+        var $html = $('<div></div>');
+        var $html2 = $('<div id="user_list"></div>');
+        var temp = $('<div></div>');
+        $.ajax({
+            url: "/menu/getUser",
+            method: "GET",
+            dataType:"json",
+            async: false,
+            success: function (data) {
+                $.each(data, function (i, item) {
+                    if ((i != 0 && i % 2 == 0)){
+                        $html2.append(temp);
+                        temp = $('<div></div>')
+                    }
+                    temp.append('<span value="' + item.id + '"' +' name="' + item.userName  +'" onclick="clickName(this, false)" style="margin: 10px 0px">' + item.userCode + '---' + item.userName + '</span>');
+                    if (i == (data.length - 1)){
+                        $html2.append(temp);
+                    }
+                })
+            }
+        });
+        $html.append($html2);
+
+        layer.open({
+            title: '你是谁？',
+            type: 1,
+            content: $html.html(),
+            area: ['600px', '1000px']
+        })
+    }
+
+    //登录后点击用户
+    function clickName(p, isFromSubmit){
+        $('#user').html($(p).attr('name'));
+        $('#user').attr('user_id', $(p).attr('value'));
+        layer.closeAll();
+        cookieUserId = $(p).attr('value');
+        setCookie("userId", $(p).attr('value'), 365);
+        getHttpinfo();
+    }
+
+
+    /**
+     * 获取个人信息并设置
+     */
+    function getHttpinfo(){
+        $.get('/daka/getHttpInfo/' + cookieUserId, function (data) {
+            $('#title2').text(data.lasttime);
+            $('#title3').text(data.lastinfo);
+            if (data.scheduled == 'Y'){
+                $('#scheduled').attr('checked',true);
+            }else {
+                $('#scheduled').attr('checked',false);
+            }
+        })
+    }
+
+    //打卡动作
+    $('#btn_submit').click(function() {
+        if ($('#user').attr('user_id')){
+            //已登录
+            submitOrder();
+        }else{
+            //未登录
+            var $html = $('<div></div>');
+            var $html2 = $('<div id="user_list"></div>');
+            var temp = $('<div></div>');
+            $.ajax({
+                url: "/menu/getUser",
+                method: "GET",
+                dataType:"json",
+                async: false,
+                success: function (data) {
+                    $.each(data, function (i, item) {
+                        if ((i != 0 && i % 2 == 0)){
+                            $html2.append(temp);
+                            temp = $('<div></div>')
+                        }
+                        temp.append('<span value="' + item.id + '"' +' name="' + item.userName  +'" onclick="clickName(this, true)" style="margin: 10px 0px">' + item.userCode + '---' + item.userName + '</span>');
+                        if (i == (data.length - 1)){
+                            $html2.append(temp);
+                        }
+                    })
+                }
+            });
+            $html.append($html2);
+
+            layer.open({
+                title: '你是谁？',
+                type: 1,
+                content: $html.html(),
+                area: ['600px', '1000px']
+            })
+        }
+    })
+
+    function regHttpinfo() {
+        var $html = $('<div></div>');
+        var $html1 = $('<div style="text-align: center;"><a style="width:25%;margin-left:5%;">请在下方输入Fiddler抓包报文</a></div><br>');
+        var $html2 = $('<div style="text-align: center;"><textarea id="httpinfo" style="width: 90%;height: 600px;"></textarea></div><br>');
+        var $html3 = $('<div style="text-align: center;"><input style="width: 35%;float: none;height: 60px;" class="btn btn-success radius" type="button" value="确定" onclick="modifyHttpinfo()"><input style="width: 35%;float: none;height: 60px;margin-right: 0px;" class="btn btn-danger radius" type="button" value="取消" onclick="javascript:layer.closeAll()"></div><br>');
+        $html.append($html1).append($html2).append($html3);
+
+        layer.open({
+            title: '请输入Http报文',
+            type: 1,
+            content: $html.html(),
+            area: ['800px', '920px']
+        })
+    }
+
+    function modifyHttpinfo() {
+        $.ajax({
+            url: '/daka/save',
+            method: 'post',
+            data: {userId: $('#user').attr('user_id'), httpInfo: $('#httpinfo').val()},
+            success: function(data){
+                layer.closeAll();
+                alert('修改成功！');
+            },
+            error: function (data) {
+                layer.closeAll();
+                alert(data);
+            }
+        })
+    }
+
+    function submitOrder() {
+        layer.load();
+        $.ajax({
+            url: '/daka/daka',
+            method: 'post',
+            data: {userId: $('#user').attr('user_id')},
+            success: function(data){
+                layer.closeAll();
+                if (data.success == 'true'){
+                    alert('打卡成功！\r\r请自行通过响应报文判断接口是否已失效\r\r接口调用返回报文：' + data.postMsg);
+                    $('#title2').text(data.time);
+                    $('#title3').text(data.postMsg);
+                }else{
+                    if (data.haveHttpInfo == 'false'){
+                        alert('请先输入Http报文');
+                        regHttpinfo();
+                    }else{
+                        alert('打卡失败');
+                    }
+                }
+            },
+            error: function (data) {
+                layer.closeAll();
+                alert(data);
+            }
+        })
+        layer.closeAll();
+    }
+
+
+    function formatTs(datetime){
+        var date = new Date(datetime);//时间戳为10位需*1000，时间戳为13位的话不需乘1000
+        var year = date.getFullYear(),
+            month = ("0" + (date.getMonth() + 1)).slice(-2),
+            sdate = ("0" + date.getDate()).slice(-2),
+            hour = ("0" + date.getHours()).slice(-2),
+            minute = ("0" + date.getMinutes()).slice(-2),
+            second = ("0" + date.getSeconds()).slice(-2);
+        // 拼接
+        var result = year + "-"+ month +"-"+ sdate +" "+ hour +":"+ minute +":" + second;
+        // 返回
+        return result;
+    }
+
+    function setCookie(c_name,value,expiredays){
+        var exdate=new Date()
+        exdate.setDate(exdate.getDate()+expiredays)
+        document.cookie=c_name + "=" +escape(value)+ ((expiredays==null) ? "" : ";expires="+exdate.toGMTString())
+    }
+
+    function getCookie(cookie_name) {
+        var allcookies = document.cookie;
+        //索引长度，开始索引的位置
+        var cookie_pos = allcookies.indexOf(cookie_name);
+
+
+        // 如果找到了索引，就代表cookie存在,否则不存在
+        if (cookie_pos != -1) {
+            // 把cookie_pos放在值的开始，只要给值加1即可
+            //计算取cookie值得开始索引，加的1为“=”
+            cookie_pos = cookie_pos + cookie_name.length + 1;
+            //计算取cookie值得结束索引
+            var cookie_end = allcookies.indexOf(";", cookie_pos);
+
+
+            if (cookie_end == -1) {
+                cookie_end = allcookies.length;
+
+
+            }
+            //得到想要的cookie的值
+            var value = unescape(allcookies.substring(cookie_pos, cookie_end));
+        }
+        return value;
+    }
+
+</script>
+</html>

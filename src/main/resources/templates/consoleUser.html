@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>我的订单</title>
+    <link rel="stylesheet" href="/bootstrap.min.css">
+    <link rel="stylesheet" href="/h-ui/css/H-ui.css">
+    <script type="text/javascript" src="/jquery-1.12.4.min.js"></script>
+    <script type="text/javascript" src="/h-ui/js/H-ui.js"></script>
+    <script type="text/javascript" src="/lib/layer/2.4/layer.js"></script>
+    <style>
+        .navbar-black{
+            background-color: #374151;
+        }
+        .header_text{
+            color: white;
+            display: inline-block;
+            line-height: 100px!important;
+            font-size: 25px;
+            margin-right: 50px!important;
+        }
+        th{
+            font-size: 35px;
+            font-weight: bold!important;
+            text-align: center!important;
+            background-color: red;
+        }
+
+        td{
+            font-size: 30px;
+            text-align: center;
+        }
+        .tr_data td{
+            text-align: center;
+        }
+        #nowDate{
+            height: 80px;
+            width: 260px;
+            position: absolute;
+            right: -50px;
+            top: 10px;
+            font-size: 30px;
+            font-width: bold;
+        }
+        .header_text{
+            color: white;
+            display: inline-block;
+            line-height: 100px!important;
+            font-size: 25px;
+            margin-right: 50px!important;
+        }
+
+        .tr_data1 a{
+            color: #06c;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <header class="navbar-wrapper">
+        <div class="navbar navbar-black" style="height: 100px;margin-bottom: 0px;">
+            <div class="container cl" style="width: 800px!important;">
+                <img src="/back.png" style="width: 45px;margin-right: 10px;position: relative;bottom: 8px;" onclick="back()">
+                <a class="header_text" onclick="back()">返回点餐系统</a>
+                <a id="user" class="header_text" style="float: right!important;margin-right: 0px!important;">请选择用户</a>
+            </div>
+        </div>
+    </header>
+    <div>
+        <h1 style="text-align: center;margin-top: 30px;">订单详情（仅展示近一个月订单）</h1>
+    </div>
+
+    <div style="margin: 0px 50px;">
+        <table border="1" id="table1">
+            <tr id="th2">
+                <th style="width: 20%">下单日期</th>
+                <th style="width: 40%">菜品</th>
+                <th style="width: 10%">数量</th>
+                <th style="width: 15%">金额</th>
+                <th style="width: 15%">合计</th>
+            </tr>
+        </table>
+    </div>
+
+</body>
+<script>
+    var url = decodeURI(location.search); //获取url中"?"符后的字串 ?vm_id=2
+    var userId;
+    var lastOrderId;
+    var nowDate;
+    var tomorrowDate;
+    var nowHour;
+
+    $(function () {
+        if(url.indexOf("?") != -1) {
+            str = url.substr(1);
+            strs = str.split("=");
+            userId = strs[1];
+        }
+        if (userId){
+            $.post('/menu/userName', {userId: userId}, function (data) {
+                $('#user').html(data);
+                $('#user').attr('user_id',userId);
+            })
+        }
+        getNow();
+        queryAndLoad();
+    });
+
+
+    function getNow() {
+        var now = new Date();
+        var nowYear = now.getFullYear(); //年
+        var nowMonth = now.getMonth() + 1 < 10 ? "0" + (now.getMonth() + 1) : (now.getMonth() + 1) ; //月
+        var nowDay = now.getDate() < 10 ? "0" + now.getDate() : now.getDate(); //日期
+        nowHour = now.getHours() < 10 ? "0" + now.getHours() : now.getHours();
+        nowDate = nowYear + "-" + nowMonth + "-" + nowDay;
+        var tomorrow = new Date(now.setDate(now.getDate() + 1));
+        var tomorrowYear = tomorrow.getFullYear(); //年
+        var tomorrowMonth = tomorrow.getMonth() + 1 < 10 ? "0" + (tomorrow.getMonth() + 1) : tomorrow.getMonth(); //月
+        var tomorrowDay = tomorrow.getDate() < 10 ? "0" + tomorrow.getDate() : tomorrow.getDate(); //日期
+        tomorrowDate = tomorrowYear + "-" + tomorrowMonth + "-" + tomorrowDay;
+    }
+
+    function queryAndLoad() {
+        $.ajax({
+            url: '/menu/userOrderDetail',
+            method: 'post',
+            data: {userId: userId},
+            success: function(data){
+                var userOrderDetail = data.userOrderDetail;
+                if (userOrderDetail.length > 0){
+                    var m = new Map();
+                    $.each(userOrderDetail, function (index, item) {
+                        var count = m.get(item.orderId);
+                        var sum = m.get(item.orderId + '_sum');
+                        if (count){
+                            m.set(item.orderId, count + 1);
+                            m.set(item.orderId + '_sum', sum + item.goodsPrice * item.num);
+                        }else{
+                            m.set(item.orderId, 1);
+                            m.set(item.orderId + '_sum', item.goodsPrice * item.num);
+
+                        }
+                    })
+                    $.each(userOrderDetail, function (index, item) {
+                        if (lastOrderId != item.orderId){
+                            var spanCount = m.get(item.orderId);
+                            var sum = m.get(item.orderId + '_sum');
+                            var $tr = $('<tr class="tr_data1" orderid="' + item.orderId + '"></tr>');
+                            //如果是当前日期是订单日期，或者第二天的6点前，允许取消订单
+                            if (item.ts == nowDate || (item.ts == tomorrowDate && nowHour < 6)){
+                                $tr.append('<td rowspan="' + spanCount + '">' + item.ts + '<br><a onclick="cancelOrder(' + item.orderId + ',this)">取消订单</a>' + '</td>');
+                            }else {
+                                $tr.append('<td rowspan="' + spanCount + '">' + item.ts + '</td>');
+                            }
+                            $tr.append('<td>' + item.goodsName + (item.goodsId < 400 ? item.type : "") + '</td>');
+                            $tr.append('<td>' + item.num + '</td>');
+                            $tr.append('<td>' + item.goodsPrice * item.num + '</td>');
+                            $tr.append('<td rowspan="' + spanCount + '">' + sum + '</td>');
+                            $('#table1').append($tr);
+                        }else {
+                            var $tr = $('<tr class="tr_data1" orderid="' + item.orderId + '"></tr>');
+                            $tr.append('<td>' + item.goodsName + (item.goodsId < 400 ? item.type : "") + '</td>');
+                            $tr.append('<td>' + item.num + '</td>');
+                            $tr.append('<td>' + item.goodsPrice * item.num + '</td>');
+                            $('#table1').append($tr);
+                        }
+                        lastOrderId = item.orderId;
+
+                    })
+                }
+            },
+            error: function (data) {
+                alert(data);
+            }
+        })
+    }
+
+    function cancelOrder(orderId, ele) {
+        if (confirm('确定取消订单吗？')) {
+            $.post('/menu/cancelOrder', {orderId: orderId}, function (data) {
+                if (data.errorMsg){
+                    alert(errorMsg);
+                }else {
+                    $('tr[orderid=' + orderId + ']').remove();
+                    alert('取消成功！');
+                }
+            })
+        }
+    }
+
+    function back() {
+        $.post('/menu/userName', {userId: userId}, function (data) {
+            if (data.userType==0){
+                window.location.href="/page/?userId="+userId;
+            }else if(data.userType==1) {
+                window.location.href="/page/dgn?userId="+userId;
+            }
+        })
+    }
+
+
+</script>
+</html>

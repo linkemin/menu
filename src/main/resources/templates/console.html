@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>收银台</title>
+<!--    <link rel="stylesheet" href="/bootstrap.min.css">-->
+    <link rel="stylesheet" href="/h-ui/css/H-ui.css">
+    <script type="text/javascript" src="/jquery-1.12.4.min.js"></script>
+<!--    <script type="text/javascript" src="/h-ui/js/H-ui.js"></script>-->
+    <script type="text/javascript" src="/lib/layer/2.4/layer.js"></script>
+    <style>
+        .navbar-black{
+            background-color: #374151;
+        }
+        .header_text{
+            color: white;
+            display: inline-block;
+            line-height: 100px!important;
+            font-size: 25px;
+            margin-right: 50px!important;
+        }
+        th{
+            font-size: 35px;
+            font-weight: bold!important;
+            text-align: center!important;
+            background-color: red;
+        }
+
+        .tuangou th{
+            font-size: 35px;
+            font-weight: bold!important;
+            text-align: center!important;
+            background-color: #f37b1d;
+        }
+
+        .maicai th{
+            font-size: 35px;
+            font-weight: bold!important;
+            text-align: center!important;
+            background-color: #33b823;
+        }
+
+
+        #th3 th,#th4 th{
+            background-color: #5a98de!important;
+        }
+        td{
+            font-size: 30px;
+            text-align: center;
+        }
+        .tr_data td{
+            text-align: center;
+        }
+        #nowDate{
+            height: 80px;
+            width: 260px;
+            position: absolute;
+            right: -50px;
+            top: 10px;
+            font-size: 30px;
+            font-width: bold;
+        }
+        h1{
+            line-height: normal;
+        }
+    </style>
+</head>
+<body>
+    <header class="navbar-wrapper">
+        <div class="navbar navbar-black" style="height: 100px;margin-bottom: 0px;">
+            <div class="container cl" style="width: 800px!important;">
+                <img src="/back.png" style="width: 45px;margin-right: 10px;position: relative;bottom: 8px;" onclick="back()">
+                <a class="header_text" href="/page/">返回点餐系统</a>
+                <a class="header_text" onclick="javascript:location.reload(true);" >刷新当前页面</a>
+                <a class="header_text" style="position: relative;right: 150px;float: right;">日期：</a>
+                <input type="date" id="nowDate" />
+            </div>
+        </div>
+    </header>
+    <div>
+        <h1 id="title1" style="text-align: center;margin-top: 30px;">订单总览</h1>
+    </div>
+
+    <div style="margin: 0px 50px;">
+        <table border="1" id="table1">
+            <tr id="th1">
+                <th style="width: 25%">品钟</th>
+                <th style="width: 45%">菜品</th>
+                <th style="width: 15%">数量</th>
+                <th style="width: 15%">金额</th>
+            </tr>
+        </table>
+    </div>
+
+<!--    <div>-->
+<!--        <h1 style="text-align: center;margin-top: 100px;">总计：</h1>-->
+<!--    </div>-->
+
+    <div>
+        <h1 id="title2" style="text-align: center;margin-top: 100px;">订单详情</h1>
+    </div>
+
+    <div style="margin: 0px 50px;">
+        <table border="1" id="table2">
+            <tr id="th2">
+                <th style="width: 15%">姓名</th>
+                <th style="width: 30%">菜品</th>
+                <th style="width: 25%">喜好</th>
+                <th style="width: 10%">数量</th>
+                <th style="width: 10%">金额</th>
+                <th style="width: 10%">合计</th>
+            </tr>
+        </table>
+    </div>
+
+    <div>
+        <h1 style="text-align: center;margin-top: 100px;color: #225580;font-weight: bold;">----------------  以下是美团买菜优惠信息  ----------------</h1>
+    </div>
+    <div id="maicai"></div>
+
+    <div>
+        <h1 style="text-align: center;margin-top: 100px;color: #225580;font-weight: bold;">----------------  以下是社区团购取货信息  ----------------</h1>
+    </div>
+
+    <div id="tuangou"></div>
+
+<!--    <div>-->
+<!--        <h1 id="title3" style="text-align: center;margin-top: 30px;">大观南地铁站订单总览</h1>-->
+<!--    </div>-->
+
+<!--    <div style="margin: 0px 50px;">-->
+<!--        <table border="1" id="table3">-->
+<!--            <tr id="th3">-->
+<!--                <th style="width: 25%">品钟</th>-->
+<!--                <th style="width: 45%">菜品</th>-->
+<!--                <th style="width: 15%">数量</th>-->
+<!--                <th style="width: 15%">金额</th>-->
+<!--            </tr>-->
+<!--        </table>-->
+<!--    </div>-->
+
+
+<!--    <div>-->
+<!--        <h1 id="title4" style="text-align: center;margin-top: 100px;">大观南地铁站订单详情</h1>-->
+<!--    </div>-->
+
+<!--    <div style="margin: 0px 50px;">-->
+<!--        <table border="1" id="table4">-->
+<!--            <tr id="th4">-->
+<!--                <th style="width: 15%">姓名</th>-->
+<!--                <th style="width: 10%">手机尾号</th>-->
+<!--                <th style="width: 30%">菜品</th>-->
+<!--                <th style="width: 25%">喜好</th>-->
+<!--                <th style="width: 10%">数量</th>-->
+<!--                <th style="width: 10%">合计</th>-->
+<!--            </tr>-->
+<!--        </table>-->
+<!--    </div>-->
+
+</body>
+<script>
+
+    var lastSearchDate;
+    var data_mt_xs;
+    var data_tcc_pdd
+
+    $(function () {
+        getNow();
+        getTuangou_mt_xs();
+        getTuangou_tcc_pdd();
+        getMeiTuanMaiCai();
+    });
+    //初始化时间控件
+    function getNow() {
+        var now = new Date();
+        if (now.getHours() < 12){
+            now = new Date(new Date().setDate(new Date().getDate() - 1));//昨天
+        }
+        var nowYear = now.getFullYear(); //年
+        var nowMonth = now.getMonth() + 1 < 10 ? "0" + (now.getMonth() + 1) : (now.getMonth() + 1) ; //月
+        var nowDay = now.getDate() < 10 ? "0" + now.getDate() : now.getDate(); //日期
+        var nowHour = now.getHours() < 10 ? "0" + now.getHours() : now.getHours(); //时
+        var nowMinute = now.getMinutes() < 10 ? "0" + now.getMinutes() : now.getMinutes(); //分
+        var nowDate = nowYear + "-" + nowMonth + "-" + nowDay;
+        $("#nowDate").val(nowDate);
+        queryAndLoad(nowDate);
+    }
+
+    $('#nowDate').change(function () {
+        layer.load();
+        var date = $('#nowDate').val();
+        queryAndLoad(date);
+        reloadTuangou(date);
+        layer.closeAll();
+    })
+
+    function queryAndLoad(date) {
+        if (date){
+            $('#title1').html('【' + date + '】 订单总览');
+            $('#title2').html('【' + date + '】 订单详情');
+            $('#title3').html('【' + date + '】 大观南路订单总览');
+            $('#title4').html('【' + date + '】 大观南路订单详情');
+            $('#nowDate').val();
+            $.ajax({
+                url: '/menu/orderReport',
+                method: 'post',
+                data: {date: $('#nowDate').val()},
+                success: function(data){
+                    if (lastSearchDate != date){
+                        $('tr.tr_data1').remove();
+                        $('tr.tr_data2').remove();
+                        lastSearchDate = data;
+                    }
+                    var orderReport = data.orderReport;
+                    var orderReportDetail = data.orderReportDetail;
+                    if (orderReport.length > 0){
+                        var m = new Map();
+                        var typeCountMap = new Map();
+                        var lastUserId;
+                        var total = 0;
+                        $.each(orderReport, function (index, item) {
+                            var $tr = $('<tr class="tr_data1"></tr>');
+                            $tr.append('<td>' + item.type + '</td>');
+                            $tr.append('<td>' + item.goodsName + '</td>');
+                            $tr.append('<td>' + item.count + '</td>');
+                            $tr.append('<td>' + item.price + '</td>');
+                            $('#table1').append($tr);
+                            typeCountMap.set(item.type, typeCountMap.get(item.type) ? typeCountMap.get(item.type) + item.count : item.count);
+                        })
+                        $.each(orderReportDetail, function (index, item) {
+                            var count = m.get(item.userId);
+                            var sum = m.get(item.userId + '_sum');
+                            if (count){
+                                m.set(item.userId, count + 1);
+                                m.set(item.userId + '_sum', sum + item.goodsPrice * item.num);
+                            }else{
+                                m.set(item.userId, 1);
+                                m.set(item.userId + '_sum', item.goodsPrice * item.num);
+
+                            }
+                            total += item.goodsPrice;
+                        })
+                        $.each(orderReportDetail, function (index, item) {
+                            if (lastUserId != item.userId){
+                                var spanCount = m.get(item.userId);
+                                var sum = m.get(item.userId + '_sum');
+                                var $tr = $('<tr class="tr_data2"></tr>');
+                                $tr.append('<td rowspan="' + spanCount + '">' + item.userName + '</td>');
+                                $tr.append('<td>' + item.goodsName + item.type + '</td>');
+                                $tr.append('<td style="color: red;font-weight: bold;" rowspan="' + spanCount + '">' + (item.favorite ? item.favorite : '') + '</td>');
+                                if (item.num > 1){
+                                    $tr.append('<td style="color: red">' + item.num + '</td>');
+                                }else {
+                                    $tr.append('<td>' + item.num + '</td>');
+                                }
+                                $tr.append('<td>' + item.goodsPrice * item.num + '</td>');
+                                $tr.append('<td rowspan="' + spanCount + '">' + sum + '</td>');
+                                $('#table2').append($tr);
+                            }else {
+                                var $tr = $('<tr class="tr_data2"></tr>');
+                                $tr.append('<td>' + item.goodsName + item.type + '</td>');
+                                if (item.num > 1){
+                                    $tr.append('<td style="color: red">' + item.num + '</td>');
+                                }else {
+                                    $tr.append('<td>' + item.num + '</td>');
+                                }
+                                $tr.append('<td>' + item.goodsPrice * item.num + '</td>');
+                                $('#table2').append($tr);
+                            }
+                            lastUserId = item.userId;
+                        })
+                        //加在一栏总计
+                        var totalTypeText = '';
+                        typeCountMap.forEach(function(value,key){
+                            if (totalTypeText.split("、").length == 2){
+                                totalTypeText += '<span style="color: red;font-weight: bold;font-size: 35px;">' + value + '</span>' + key + '、<br>';
+                            }else{
+                                totalTypeText += '<span style="color: red;font-weight: bold;font-size: 35px;">' + value + '</span>' + key + '、';
+                            }
+                        });
+                        totalTypeText = totalTypeText.substr(0, totalTypeText.length -1);
+                        var $tr = $('<tr class="tr_data1" style="background-color: #e6e6e6"></tr>');
+                        $tr.append('<td>总计</td>');
+                        $tr.append('<td colspan="2">' + totalTypeText + '</td>');
+                        $tr.append('<td>' + total + '</td>');
+                        $('#table1').append($tr);
+
+                    }else {
+                        $('tr.tr_data1').remove();
+                        $('tr.tr_data2').remove();
+                    }
+                },
+                error: function (data) {
+                    alert(data);
+                }
+            })
+
+            //开始加载大观南地铁站数据
+            $.ajax({
+                url: '/menu/orderDgnReport',
+                method: 'post',
+                data: {date: $('#nowDate').val()},
+                success: function(data){
+                    if (lastSearchDate != date){
+                        $('tr.tr_data3').remove();
+                        $('tr.tr_data4').remove();
+                        lastSearchDate = data;
+                    }
+                    var orderReport = data.orderReport;
+                    var orderReportDetail = data.orderReportDetail;
+                    if (orderReport.length > 0){
+                        var m = new Map();
+                        var typeCountMap = new Map();
+                        var lastUserId;
+                        var total = 0;
+                        $.each(orderReport, function (index, item) {
+                            var $tr = $('<tr class="tr_data3"></tr>');
+                            $tr.append('<td>' + item.type + '</td>');
+                            $tr.append('<td>' + item.goodsName + '</td>');
+                            $tr.append('<td>' + item.count + '</td>');
+                            $tr.append('<td>' + item.price + '</td>');
+                            $('#table3').append($tr);
+                            typeCountMap.set(item.type, typeCountMap.get(item.type) ? typeCountMap.get(item.type) + item.count : item.count);
+                        })
+                        $.each(orderReportDetail, function (index, item) {
+                            var count = m.get(item.userId);
+                            var sum = m.get(item.userId + '_sum');
+                            if (count){
+                                m.set(item.userId, count + 1);
+                                m.set(item.userId + '_sum', sum + item.goodsPrice * item.num);
+                            }else{
+                                m.set(item.userId, 1);
+                                m.set(item.userId + '_sum', item.goodsPrice * item.num);
+
+                            }
+                            total += item.goodsPrice;
+                        })
+                        $.each(orderReportDetail, function (index, item) {
+                            if (lastUserId != item.userId){
+                                var spanCount = m.get(item.userId);
+                                var sum = m.get(item.userId + '_sum');
+                                var $tr = $('<tr class="tr_data4"></tr>');
+                                $tr.append('<td rowspan="' + spanCount + '">' + item.userName + '</td>');
+                                $tr.append('<td rowspan="' + spanCount + '">' + item.mobile + '</td>');
+                                $tr.append('<td>' + item.goodsName + item.type + '</td>');
+                                $tr.append('<td style="color: red;font-weight: bold;" rowspan="' + spanCount + '">' + (item.favorite ? item.favorite : '') + '</td>');
+                                if (item.num > 1){
+                                    $tr.append('<td style="color: red">' + item.num + '</td>');
+                                }else {
+                                    $tr.append('<td>' + item.num + '</td>');
+                                }
+                                $tr.append('<td rowspan="' + spanCount + '">' + sum + '</td>');
+                                $('#table4').append($tr);
+                            }else {
+                                var $tr = $('<tr class="tr_data4"></tr>');
+                                $tr.append('<td>' + item.goodsName + item.type + '</td>');
+                                if (item.num > 1){
+                                    $tr.append('<td style="color: red">' + item.num + '</td>');
+                                }else {
+                                    $tr.append('<td>' + item.num + '</td>');
+                                }
+                                $('#table4').append($tr);
+                            }
+                            lastUserId = item.userId;
+                        })
+                        //加在一栏总计
+                        var totalTypeText = '';
+                        typeCountMap.forEach(function(value,key){
+                            if (totalTypeText.split("、").length == 2){
+                                totalTypeText += '<span style="color: red;font-weight: bold;font-size: 35px;">' + value + '</span>' + key + '、<br>';
+                            }else{
+                                totalTypeText += '<span style="color: red;font-weight: bold;font-size: 35px;">' + value + '</span>' + key + '、';
+                            }
+                        });
+                        totalTypeText = totalTypeText.substr(0, totalTypeText.length -1);
+                        var $tr = $('<tr class="tr_data3" style="background-color: #e6e6e6"></tr>');
+                        $tr.append('<td>总计</td>');
+                        $tr.append('<td colspan="2">' + totalTypeText + '</td>');
+                        $tr.append('<td>' + total + '</td>');
+                        $('#table3').append($tr);
+
+                    }else {
+                        $('tr.tr_data3').remove();
+                        $('tr.tr_data4').remove();
+                    }
+                },
+                error: function (data) {
+                    alert(data);
+                }
+            })
+
+        }
+    }
+
+    //初始化美团、兴盛数据
+    function getTuangou_mt_xs() {
+        $.ajax({
+            url:'/tuangou/mtAndXs',
+            method:'get',
+            success: function(data){
+                data_mt_xs = data;
+                $.each(data, function (index0, item0) {
+                    var today = new Date().format('yyyy-MM-dd');
+                    var yesterday = new Date(new Date() - 24*60*60*1000).format("yyyy-MM-dd");
+                    var $tuangou = $('#tuangou');
+                    if ('string'==typeof(item0)){
+                        var $div = $('<div class="tuangou_div" style="margin: 0px 50px;"></div>');
+                        var $h1 = $('<h1 style="text-align: center;margin-top: 30px;"></h1>');
+                        $h1.html(item0);
+                        $div.append($h1);
+                        $tuangou.append($div);
+                    } else if(item0 == null){
+                        var $div = $('<div class="tuangou_div" style="margin: 0px 50px;"></div>');
+                        var $h1 = $('<h1 style="text-align: center;margin-top: 30px;"></h1>');
+                        $h1.html(index0 + '：数据为空');
+                        $div.append($h1);
+                        $tuangou.append($div)
+                    } else if (item0.length > 0){
+                        var $div = $('<div class="tuangou_div" style="margin: 0px 50px;display: none;"></div>');
+                        var $h1 = $('<h1 style="text-align: center;margin-top: 30px;"></h1>');
+                        var $table = $('<table border="1" class="tuangou""><tr>' +
+                            '    <th style="width: 20%">下单时间</th>' +
+                            '    <th style="width: 60%">商品名称</th>' +
+                            '    <th style="width: 10%">数量</th>' +
+                            '    <th style="width: 10%">原价</th>' +
+                            '</tr></table>');
+                        $.each(item0, function (index, item) {
+                            if (compareDate(item.orderDate.substr(0,10), today) == 0 ||item.orderDate.substr(0,10) == yesterday){
+
+                            }else {
+                                return true;//继续循环
+                            }
+                            var addTime = false;
+                            $div.show();
+                            $.each(item.itemLists, function (index2, item2) {
+                                var $tr = $('<tr class="tr_data_tuangou"></tr>');
+                                if (!addTime){
+                                    if (item.orderDate.substr(0,10) == today){
+                                        $tr.append('<td style="color: red;" rowspan="' + item.itemLists.length + '"' + '>' + item.orderDate + '</br>（明日取）' + '</td>');
+                                    }else {
+                                        $tr.append('<td rowspan="' + item.itemLists.length + '"' + '>' + item.orderDate + '</td>');
+                                    }
+                                    addTime = true;
+                                }
+                                $tr.append('<td style="text-align: left;">' + item2.productName + '</td>');
+                                $tr.append('<td>' + item2.productCount + '</td>');
+                                $tr.append('<td>' + item2.productPrice + '</td>');
+                                $table.append($tr);
+                            })
+                            var $tr = $('<tr class="tr_data_tuangou" style="background-color: #e6e6e6"></tr>');
+                            $tr.append('<td colspan="2">实付合计</td>');
+                            $tr.append('<td>' + item.totalCount + '</td>');
+                            $tr.append('<td>' + returnFloat(item.orderTotal) + '</td>');
+                            $table.append($tr);
+                        })
+                        $h1.html("【" + item0[0].originName + "】-【" + item0[0].phone.substr(item0[0].phone.length - 4) + "】-【" + item0[0].storeName + "】");
+                        $div.append($h1);
+                        $div.append($table);
+                        $tuangou.append($div);
+                    }
+                })
+            }
+        })
+    }
+
+    //初始化淘菜菜、多多买菜数据
+    function getTuangou_tcc_pdd() {
+        layer.load(1);
+        $.ajax({
+            url:'/tuangou/tccAndPdd',
+            method:'get',
+            success: function(data){
+                data_tcc_pdd = data;
+                $.each(data, function (index0, item0) {
+                    var today = new Date().format('yyyy-MM-dd');
+                    var yesterday = new Date(new Date() - 24*60*60*1000).format("yyyy-MM-dd");
+                    var $tuangou = $('#tuangou');
+                    if ('string'==typeof(item0)){
+                        var $div = $('<div class="tuangou_div" style="margin: 0px 50px;"></div>');
+                        var $h1 = $('<h1 style="text-align: center;margin-top: 30px;"></h1>');
+                        $h1.html(item0);
+                        $div.append($h1);
+                        $tuangou.append($div);
+                    } else if(item0 == null){
+                        var $div = $('<div class="tuangou_div" style="margin: 0px 50px;"></div>');
+                        var $h1 = $('<h1 style="text-align: center;margin-top: 30px;"></h1>');
+                        $h1.html(index0 + '：数据为空');
+                        $div.append($h1);
+                        $tuangou.append($div)
+                    } else if (item0.length > 0){
+                        var $div = $('<div class="tuangou_div" style="margin: 0px 50px;display: none;"></div>');
+                        var $h1 = $('<h1 style="text-align: center;margin-top: 30px;"></h1>');
+                        var $table = $('<table border="1" class="tuangou""><tr>' +
+                            '    <th style="width: 20%">下单时间</th>' +
+                            '    <th style="width: 60%">商品名称</th>' +
+                            '    <th style="width: 10%">数量</th>' +
+                            '    <th style="width: 10%">原价</th>' +
+                            '</tr></table>');
+                        $.each(item0, function (index, item) {
+                            if (compareDate(item.orderDate.substr(0,10), today) == 0 ||item.orderDate.substr(0,10) == yesterday){
+
+                            }else {
+                                return true;//继续循环
+                            }
+                            var addTime = false;
+                            $div.show();
+                            $.each(item.itemLists, function (index2, item2) {
+                                var $tr = $('<tr class="tr_data_tuangou"></tr>');
+                                if (!addTime){
+                                    if (item.orderDate.substr(0,10) == today){
+                                        $tr.append('<td style="color: red;" rowspan="' + item.itemLists.length + '"' + '>' + item.orderDate + '</br>（明日取）' + '</td>');
+                                    }else {
+                                        $tr.append('<td rowspan="' + item.itemLists.length + '"' + '>' + item.orderDate + '</td>');
+                                    }
+                                    addTime = true;
+                                }
+                                $tr.append('<td style="text-align: left;">' + item2.productName + '</td>');
+                                $tr.append('<td>' + item2.productCount + '</td>');
+                                $tr.append('<td>' + item2.productPrice + '</td>');
+                                $table.append($tr);
+                            })
+                            var $tr = $('<tr class="tr_data_tuangou" style="background-color: #e6e6e6"></tr>');
+                            $tr.append('<td colspan="2">实付合计</td>');
+                            $tr.append('<td>' + item.totalCount + '</td>');
+                            $tr.append('<td>' + returnFloat(item.orderTotal) + '</td>');
+                            $table.append($tr);
+                        })
+                        $h1.html("【" + item0[0].originName + "】-【" + item0[0].phone.substr(item0[0].phone.length - 4) + "】-【" + item0[0].storeName + "】");
+                        $div.append($h1);
+                        $div.append($table);
+                        $tuangou.append($div);
+                    }
+                })
+                layer.closeAll();
+            }
+        })
+    }
+
+    //重新加载团购数据
+    function reloadTuangou(date) {
+        $('.tuangou_div').remove();
+        $.each(Object.assign(data_mt_xs, data_tcc_pdd), function (index0, item0) {
+            var today = new Date().format('yyyy-MM-dd');
+            var yesterday = new Date(new Date(date) - 24*60*60*1000).format("yyyy-MM-dd");
+            var $tuangou = $('#tuangou');
+            if ('string'==typeof(item0)){
+                var $div = $('<div class="tuangou_div" style="margin: 0px 50px;"></div>');
+                var $h1 = $('<h1 style="text-align: center;margin-top: 30px;"></h1>');
+                $h1.html(item0);
+                $div.append($h1);
+                $tuangou.append($div);
+            } else if(item0 == null){
+                var $div = $('<div class="tuangou_div" style="margin: 0px 50px;"></div>');
+                var $h1 = $('<h1 style="text-align: center;margin-top: 30px;"></h1>');
+                $h1.html(index0 + '：数据为空');
+                $div.append($h1);
+                $tuangou.append($div)
+            } else if (item0.length > 0){
+                var $div = $('<div class="tuangou_div" style="margin: 0px 50px;display: none;"></div>');
+                var $h1 = $('<h1 style="text-align: center;margin-top: 30px;"></h1>');
+                var $table = $('<table border="1" class="tuangou""><tr>' +
+                    '    <th style="width: 20%">下单时间</th>' +
+                    '    <th style="width: 60%">商品名称</th>' +
+                    '    <th style="width: 10%">数量</th>' +
+                    '    <th style="width: 10%">原价</th>' +
+                    '</tr></table>');
+                $.each(item0, function (index, item) {
+                    if (compareDate(item.orderDate.substr(0,10), yesterday) != 0){
+                        if (today == item.orderDate.substr(0,10) && today == date) {
+                            //订单日期是今天的，也显示出来
+                        }else {
+                            return true;//继续循环
+                        }
+                    }
+                    var addTime = false;
+                    $div.show();
+                    $.each(item.itemLists, function (index2, item2) {
+                        var $tr = $('<tr class="tr_data_tuangou"></tr>');
+                        if (!addTime){
+                            if (item.orderDate.substr(0,10) == today){
+                                $tr.append('<td style="color: red;" rowspan="' + item.itemLists.length + '"' + '>' + item.orderDate + '</br>（明日取）' + '</td>');
+                            }else {
+                                $tr.append('<td rowspan="' + item.itemLists.length + '"' + '>' + item.orderDate + '</td>');
+                            }
+                            addTime = true;
+                        }
+                        $tr.append('<td style="text-align: left;">' + item2.productName + '</td>');
+                        $tr.append('<td>' + item2.productCount + '</td>');
+                        $tr.append('<td>' + item2.productPrice + '</td>');
+                        $table.append($tr);
+                    })
+                    var $tr = $('<tr class="tr_data_tuangou" style="background-color: #e6e6e6"></tr>');
+                    $tr.append('<td colspan="2">实付合计</td>');
+                    $tr.append('<td>' + item.totalCount + '</td>');
+                    $tr.append('<td>' + returnFloat(item.orderTotal) + '</td>');
+                    $table.append($tr);
+                })
+                $h1.html("【" + item0[0].originName + "】-【" + item0[0].phone.substr(item0[0].phone.length - 4) + "】-【" + item0[0].storeName + "】");
+                $div.append($h1);
+                $div.append($table);
+                $tuangou.append($div);
+            }
+        })
+    }
+
+
+    //获取美团买菜信息
+    function getMeiTuanMaiCai() {
+        $.ajax({
+            url:'/meituan/mianbao',
+            method:'get',
+            success: function(data){
+                
+                var $div = $('<div class="maicai_div" style="margin: 0px 50px;display: none;"></div>');
+                var $table = $('<table border="1" class="maicai""><tr>' +
+                    '    <th style="width: 20%">地址</th>' +
+                    '    <th style="width: 60%">商品名称</th>' +
+                    '    <th style="width: 20%">价格</th>' +
+                    '</tr></table>');
+                var $maicai = $('#maicai');
+                $.each(data, function (index0, item0) {
+                    if ('string'==typeof(item0)){
+                        var $div1 = $('<div class="maicai_div" style="margin: 0px 50px;"></div>');
+                        var $h1 = $('<h1 style="text-align: center;margin-top: 30px;"></h1>');
+                        $h1.html(item0);
+                        $div1.append($h1);
+                        $maicai.append($div1);
+                    }else if (item0.bvos.length > 0){
+                        var addAddress = false;
+                        $.each(item0.bvos, function (index2, item2) {
+                            $div.show();
+                            var $tr = $('<tr class="tr_data_maicai"></tr>');
+                            if (!addAddress){
+                                $tr.append('<td rowspan="' + item0.bvos.length + '"' + '>' + item0.address + '</td>');
+                                addAddress = true;
+                            }
+                            $tr.append('<td style="text-align: left;">' + item2.name + '</td>');
+                            if(item2.price < 550){
+                                $tr.append('<td style="background-color: #62b6e7;">' + item2.price/100 + '</td>');
+                            }else if(item2.price < 400){
+                                $tr.append('<td style="background-color: #1dbc4b;">' + item2.price/100 + '</td>');
+                            }else {
+                                $tr.append('<td>' + item2.price/100 + '</td>');
+                            }
+                            $table.append($tr);
+                        })
+                        $div.append($table);
+                        $maicai.append($div);
+                    }
+                })
+
+            }
+        })
+    }
+
+
+    function back() {
+        window.location.href="/page/";
+    }
+
+    function returnFloat(value){
+        var value=Math.round(parseFloat(value)*100)/100;
+        var xsd=value.toString().split(".");
+        if(xsd.length==1){
+            value=value.toString()+".00";
+            return value;
+        }
+        if(xsd.length>1){
+            if(xsd[1].length<2){
+                value=value.toString()+"0";
+            }
+            return value;
+        }
+    }
+    Date.prototype.format = function (format) {
+        var args = {
+            "M+": this.getMonth() + 1,
+            "d+": this.getDate(),
+            "h+": this.getHours(),
+            "m+": this.getMinutes(),
+            "s+": this.getSeconds(),
+            "q+": Math.floor((this.getMonth() + 3) / 3), //quarter
+
+            "S": this.getMilliseconds()
+        };
+        if (/(y+)/.test(format)) format = format.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+        for (var i in args) {
+            var n = args[i];
+
+            if (new RegExp("(" + i + ")").test(format)) format = format.replace(RegExp.$1, RegExp.$1.length == 1 ? n : ("00" + n).substr(("" + n).length));
+        }
+        return format;
+    };
+
+    function compareDate(date1,date2){
+        var oDate1 = new Date(date1);
+        var oDate2 = new Date(date2);
+        if(oDate1.getTime() > oDate2.getTime()){
+            return 1;
+        } else if (oDate1.getTime() < oDate2.getTime()){
+            return -1;
+        } else {
+            return 0;
+        }
+
+    }
+</script>
+</html>
