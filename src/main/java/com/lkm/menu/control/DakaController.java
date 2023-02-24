@@ -108,11 +108,12 @@ public class DakaController {
                 httpinfovo.setLastinfo(postMsg);
                 httpInfoJPA.saveAndFlush(httpinfovo);
                 String mail = httpinfovo.getMail();
-                if (!StringUtils.isEmpty(mail)){
+
+                if (StringUtils.isEmpty(postMsg) && !StringUtils.isEmpty(mail)){
                     List<String> mailList = new ArrayList<>();
                     mailList.add(mail);
                     try {
-                        MailService.send(mailList, httpinfovo.getLastinfo());
+                        MailService.sendFail(mailList, "");
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -218,11 +219,11 @@ public class DakaController {
         httpinfo.setLastinfo(postMsg);
         httpInfoJPA.saveAndFlush(httpinfo);
         String mail = httpinfo.getMail();
-        if (!StringUtils.isEmpty(mail)) {
+        if (StringUtils.isEmpty(postMsg) && !StringUtils.isEmpty(mail)){
             List<String> mailList = new ArrayList<>();
             mailList.add(mail);
             try {
-                MailService.send(mailList, httpinfo.getLastinfo());
+                MailService.sendFail(mailList, "");
             } catch (Exception e) {
                 e.printStackTrace();
             }
