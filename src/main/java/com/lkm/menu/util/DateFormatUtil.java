@@ -289,6 +289,8 @@ public class DateFormatUtil {
 		}
 	}
 
+	//获取
+
 	/**
 	 * <p>时间1 > 时间2 return 1</p>
 	 * <p>时间1 < 时间2 return -1</p>
