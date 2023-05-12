@@ -1,0 +1,27 @@
+spring:
+  application:
+    name: menu_application
+  datasource:
+    #url切换数据库之后如果对应数据库名称和路径有变动，需要修改url
+    url: jdbc:mysql://127.0.0.1:3306/menu?useUnicode=true&characterEncoding=utf-8&autoReconnect=true&useSSL=false
+    username: root
+    password: 123456
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      minimum-idle: 5
+      maximum-pool-size: 10
+      idle-timeout: 180000
+      connection-timeout: 30000
+      max-lifetime: 120000
+  mvc:
+    view:
+      prefix: /
+      suffix: .html
+  jpa:
+    properties:
+      hibernate:
+        enable_lazy_load_no_trans: true  #避免hibernate懒加载，导致查询数据库失败
+        format_sql: true  #格式化sql
+    show-sql: false    #展示sql
+server:
+  port: 8080
