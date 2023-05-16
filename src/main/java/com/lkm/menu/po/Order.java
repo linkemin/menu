@@ -30,6 +30,9 @@ public class Order {
     @JoinColumn(name="order_id")
     private Set<OrderB> OrderBs = new HashSet<OrderB>(0);
 
+    @Column(name="pickup_time")
+    private String pickupTime;
+
     public Integer getId() {
         return id;
     }
@@ -68,5 +71,13 @@ public class Order {
 
     public void setOrderBs(Set<OrderB> orderBs) {
         OrderBs = orderBs;
+    }
+
+    public String getPickupTime() {
+        return pickupTime;
+    }
+
+    public void setPickupTime(String pickupTime) {
+        this.pickupTime = pickupTime;
     }
 }

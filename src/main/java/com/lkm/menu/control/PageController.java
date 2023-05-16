@@ -16,9 +16,14 @@ public class PageController {
         return "menu";
     }
 
-    @RequestMapping("/dgn")
+    @RequestMapping("/siyuan")
     public String page2(){
-        return "menu2";
+        return "menu_siyuan";
+    }
+
+    @RequestMapping("/config")
+    public String page3(){
+        return "menu_config";
     }
 
     @RequestMapping("/console")

@@ -128,6 +128,15 @@
             background-color: #9d6f6f;
             color: white;
         }
+        .layui-layer input {
+            width: 60%;
+            float: right;
+            margin-right: 5%;
+        }
+        .input-text.size-XL {
+            height: 60px;
+            font-size: 35px;
+        }
 
     </style>
 </head>
@@ -300,35 +309,18 @@
             //已登录
             submitOrder();
         }else{
-            //未登录
             var $html = $('<div></div>');
-            var $html2 = $('<div id="user_list"></div>');
-            var temp = $('<div></div>');
-            $.ajax({
-                url: "/menu/getUser",
-                method: "GET",
-                dataType:"json",
-                async: false,
-                success: function (data) {
-                    $.each(data, function (i, item) {
-                        if ((i != 0 && i % 2 == 0)){
-                            $html2.append(temp);
-                            temp = $('<div></div>')
-                        }
-                        temp.append('<span value="' + item.id + '"' +' name="' + item.userName  +'" onclick="clickName(this, true)" style="margin: 10px 0px">' + item.userCode + '---' + item.userName + '</span>');
-                        if (i == (data.length - 1)){
-                            $html2.append(temp);
-                        }
-                    })
-                }
-            });
-            $html.append($html2);
+            var $html2 = $('<div style="text-align: center;margin-top:20px;"><a style="width:25%;margin-left:5%;">姓名：</a><input id="userName" type="text" placeholder="请输入姓名" class="input-text radius size-XL"></div><br>');
+            var $html3 = $('<div style="text-align: center;"><a style="width:25%;margin-left:5%;">手机尾号：</a><input id="mobile" type="text" placeholder="手机后四位尾号，如：0671" maxlength="4" onkeyup="value=value.replace(/[^\\d]/g,\'\')" class="input-text radius size-XL"></div><br>');
+            var $html4 = $('<div style="text-align: center;"><a style="width:25%;margin-left:5%;">备注：</a><input id="favorite" type="text" placeholder="如：不要青瓜，要番茄" class="input-text radius size-XL"></div><br>');
+            var $html5 = $('<div style="text-align: center;"><input style="width: 35%;float: none;height: 60px;" class="btn btn-success radius" type="button" value="确定" onclick="modifyUser()"><input style="width: 35%;float: none;height: 60px;margin-right: 0px;" class="btn btn-danger radius" type="button" value="取消" onclick="javascript:layer.closeAll()"></div><br>');
+            $html.append($html2).append($html3).append($html4).append($html5);
 
             layer.open({
-                title: '你是谁？',
+                title: '请先登记预定信息？',
                 type: 1,
                 content: $html.html(),
-                area: ['600px', '1000px']
+                area: ['800px', '520px']
             })
         }
 
@@ -337,34 +329,52 @@
     //点击右上角请登录，或者已登录的人名
     function to_login() {
         var $html = $('<div></div>');
-        var $html2 = $('<div id="user_list"></div>');
-        var temp = $('<div></div>');
-        $.ajax({
-            url: "/menu/getUser",
-            method: "GET",
-            dataType:"json",
-            async: false,
-            success: function (data) {
-                $.each(data, function (i, item) {
-                    if ((i != 0 && i % 2 == 0)){
-                        $html2.append(temp);
-                        temp = $('<div></div>')
-                    }
-                    temp.append('<span value="' + item.id + '"' +' name="' + item.userName  +'" onclick="clickName(this, false)" style="margin: 10px 0px">' + item.userCode + '---' + item.userName + '</span>');
-                    if (i == (data.length - 1)){
-                        $html2.append(temp);
-                    }
-                })
-            }
-        });
-        $html.append($html2);
+        var $html2 = $('<div style="text-align: center;margin-top:20px;"><a style="width:25%;margin-left:5%;">姓名：</a><input id="userName" type="text" placeholder="请输入姓名" class="input-text radius size-XL" value="' + ($("#user").attr("userName") ? $("#user").attr("userName") : "") + '"></div><br>');
+        var $html3 = $('<div style="text-align: center;"><a style="width:25%;margin-left:5%;">手机尾号：</a><input id="mobile" type="text" placeholder="手机后四位尾号，如：0671" maxlength="4" onkeyup="value=value.replace(/[^\\d]/g,\'\')" class="input-text radius size-XL" value="' + ($("#user").attr("mobile") ? $("#user").attr("mobile") : "") + '"></div><br>');
+        var $html4 = $('<div style="text-align: center;"><a style="width:25%;margin-left:5%;">备注：</a><input id="favorite" type="text" placeholder="如：不要青瓜，要番茄" class="input-text radius size-XL" value="' + ($("#user").attr("favorite") ? $("#user").attr("favorite") : "") + '"></div><br>');
+        var $html5 = $('<div style="text-align: center;"><input style="width: 35%;float: none;height: 60px;" class="btn btn-success radius" type="button" value="确定" onclick="modifyUser(' + $('#user').attr('user_id') + ')"><input style="width: 35%;float: none;height: 60px;margin-right: 0px;" class="btn btn-danger radius" type="button" value="取消" onclick="javascript:layer.closeAll()"></div><br>');
+        $html.append($html2).append($html3).append($html4).append($html5);
 
         layer.open({
-            title: '你是谁？',
+            title: '修改个人信息',
             type: 1,
             content: $html.html(),
-            area: ['600px', '1000px']
+            area: ['800px', '520px']
         })
+    }
+
+    //修改个人信息
+    function modifyUser(userId){
+        //校验是否填写完毕
+        if (!$('#userName').val()){
+            alert('请填写姓名！');
+            return;
+        }
+        if (!$('#mobile').val() || $('#mobile').val().length != 4){
+            alert('请填写4位数手机尾号！');
+            return;
+        }else {
+
+        }
+        $.ajax({
+            url: '/menu/modifyUser',
+            data: {userId: userId, userName: $('#userName').val(), favorite: $('#favorite').val(),  mobile: $('#mobile').val()},
+            method: 'post',
+            async: false,
+            success: function (data) {
+                if (data){
+                    setUserInfo(data.user);
+                    $('#user').attr('user_id', data.user.id);
+                    setCookie("userId", data.user.id, 365);
+                }
+            }
+        })
+        layer.closeAll();
+        if (!userId){
+            submitOrder();
+        }else {
+            alert('保存成功！');
+        }
     }
 
     //登录后点击用户
@@ -422,53 +432,76 @@
             alert('请先选择需要购买的商品后再提交！')
             layer.closeAll();
         }else {
-            $.ajax({
-                url: '/menu/saveOrder',
-                method: 'post',
-                data: {orderData: orderData, id: $('#user').attr('user_id')},
-                success: function(data){
-                    layer.closeAll();
-                    if (data.exists == 'true'){
-                        var data = JSON.parse(data.order);
-                        var text = '';
-                        text += '您今天已经下过单啦，是否需要更换下单内容？\n';
-                        text += '下单时间：' + formatTs(data.ts) + '\n';
-                        text += '=====================\n';
-                        $.each(data.orderBs, function (index, item) {
-                            text += item.goods.goodsName + item.goods.goodsType.name + ' X' + item.num + '\n';
-                        });
-                        text += '=====================\n';
-                        text += '↓↓↓↓↓↓更换为↓↓↓↓↓↓\n';
-                        text += '=====================\n';
-                        var dataName = getDataName();
-                        text += dataName;
-                        text += '=====================\n';
-
-                        //更换下单
-                        if (confirm(text)){
-                            $.ajax({
-                                url: '/menu/modifyOrder',
-                                method: 'post',
-                                data: {orderData: orderData, id: $('#user').attr('user_id'), orderId: data.id},
-                                success: function(data){
-                                    confirm('下单成功！');
-                                },
-                                error: function (data) {
-                                    alert(data);
-                                }
-                            })
-                        }
-                    }else{
-                        confirm('下单成功！');
-                    }
-                },
-                error: function (data) {
-                    layer.closeAll();
-                    alert(data);
-                }
+            // var $html = $('<div><label style="width: 20%;" for="pickupTime">取餐时间</label><select style="width: 60%;margin: 5% 10%" name="" id="pickupTime"><option value="" disabled selected style="display: none;">请选择取餐时间</option><option value="8:10">8点10分</option><option value="9:30">9点30分</option></select></div>');
+            var $html = $('<div>' +
+                '<div style="text-align: center;">请选择取餐时间</div>' +
+                '<input type="radio" name="age" value="9:30" style="width: auto;float: none;margin: 5% 5%;zoom: 220%;"/>&nbsp;&nbsp;9:30<br>' +
+                '<input type="radio" name="age" value="8:10" style="width: auto;float: none;margin: 5% 5%;zoom: 220%;"/>&nbsp;&nbsp;8:10<br>' +
+                '其他时间：<input id="defPickUpTime" type="text" class="input-text radius size-XL">' +
+                '<button style="height: 50px;width: 70%;background: #56bb6c;margin: 5% 15%; " onclick="postData()">提交</button>' +
+                '</div>');
+            //加载取餐时间
+            layer.open({
+                title: '请选择取餐时间',
+                type: 1,
+                content: $html.html(),
+                area: ['600px', '500px']
             })
-            layer.closeAll();
         }
+    }
+
+    function postData(){
+        var orderData = getData();
+        var pickupTime = $('#defPickUpTime').val() ? $('#defPickUpTime').val() : $('input[name="age"]:checked').val();
+        if (!pickupTime){
+            alert('请选择取餐时间！');
+            return;
+        }
+        $.ajax({
+            url: '/menu/saveOrder',
+            method: 'post',
+            data: {orderData: orderData, id: $('#user').attr('user_id'), pickupTime: pickupTime},
+            success: function(data){
+                layer.closeAll();
+                if (data.exists == 'true'){
+                    var data = JSON.parse(data.order);
+                    var text = '';
+                    text += '您今天已经下过单啦，是否需要更换下单内容？\n';
+                    text += '下单时间：' + formatTs(data.ts) + '\n';
+                    text += '=====================\n';
+                    $.each(data.orderBs, function (index, item) {
+                        text += item.goods.goodsName + item.goods.goodsType.name + ' X' + item.num + '\n';
+                    });
+                    text += '=====================\n';
+                    text += '↓↓↓↓↓↓更换为↓↓↓↓↓↓\n';
+                    text += '=====================\n';
+                    var dataName = getDataName();
+                    text += dataName;
+                    text += '=====================\n';
+
+                    //更换下单
+                    if (confirm(text)){
+                        $.ajax({
+                            url: '/menu/modifyOrder',
+                            method: 'post',
+                            data: {orderData: orderData, id: $('#user').attr('user_id'), orderId: data.id, pickupTime: pickupTime},
+                            success: function(data){
+                                confirm('下单成功！');
+                            },
+                            error: function (data) {
+                                alert(data);
+                            }
+                        })
+                    }
+                }else{
+                    confirm('下单成功！');
+                }
+            },
+            error: function (data) {
+                layer.closeAll();
+                alert(data);
+            }
+        })
     }
 
 
@@ -478,32 +511,17 @@
             window.location.href="/page/consoleUser?userId="+userId;
         }else {
             var $html = $('<div></div>');
-            var $html2 = $('<div id="user_list"></div>');
-            var temp = $('<div></div>');
-            $.ajax({
-                url: "/menu/getUser",
-                method: "GET",
-                dataType:"json",
-                async: false,
-                success: function (data) {
-                    $.each(data, function (i, item) {
-                        if ((i != 0 && i % 2 == 0)){
-                            $html2.append(temp);
-                            temp = $('<div></div>')
-                        }
-                        temp.append('<span value="' + item.id + '"' +' name="' + item.userName  +'" onclick="clickNameToUserDetail(this, false)" style="margin: 10px 0px">' + item.userCode + '---' + item.userName + '</span>');
-                        if (i == (data.length - 1)){
-                            $html2.append(temp);
-                        }
-                    })
-                }
-            });
-            $html.append($html2);
+            var $html2 = $('<div style="text-align: center;margin-top:20px;"><a style="width:25%;margin-left:5%;">姓名：</a><input id="userName" type="text" placeholder="请输入姓名" class="input-text radius size-XL"></div><br>');
+            var $html3 = $('<div style="text-align: center;"><a style="width:25%;margin-left:5%;">手机尾号：</a><input id="mobile" type="text" placeholder="手机后四位尾号，如：0671" maxlength="4" onkeyup="value=value.replace(/[^\\d]/g,\'\')" class="input-text radius size-XL"></div><br>');
+            var $html4 = $('<div style="text-align: center;"><a style="width:25%;margin-left:5%;">备注：</a><input id="favorite" type="text" placeholder="如：不要青瓜，要番茄" class="input-text radius size-XL"></div><br>');
+            var $html5 = $('<div style="text-align: center;"><input style="width: 35%;float: none;height: 60px;" class="btn btn-success radius" type="button" value="确定" onclick="modifyUser()"><input style="width: 35%;float: none;height: 60px;margin-right: 0px;" class="btn btn-danger radius" type="button" value="取消" onclick="javascript:layer.closeAll()"></div><br>');
+            $html.append($html2).append($html3).append($html4).append($html5);
+
             layer.open({
-                title: '你是谁？',
+                title: '请先登记预定信息？',
                 type: 1,
                 content: $html.html(),
-                area: ['600px', '1000px']
+                area: ['800px', '520px']
             })
         }
     }

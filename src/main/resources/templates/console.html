@@ -78,7 +78,7 @@
         </div>
     </header>
     <div>
-        <h1 id="title1" style="text-align: center;margin-top: 30px;">订单总览</h1>
+        <h1 id="title1" style="text-align: center;margin-top: 30px;">邮校订单总览</h1>
     </div>
 
     <div style="margin: 0px 50px;">
@@ -97,18 +97,52 @@
 <!--    </div>-->
 
     <div>
-        <h1 id="title2" style="text-align: center;margin-top: 100px;">订单详情</h1>
+        <h1 id="title2" style="text-align: center;margin-top: 100px;">邮校订单详情</h1>
     </div>
 
     <div style="margin: 0px 50px;">
         <table border="1" id="table2">
             <tr id="th2">
-                <th style="width: 15%">姓名</th>
+                <th style="width: 40%">姓名</th>
                 <th style="width: 30%">菜品</th>
-                <th style="width: 25%">喜好</th>
                 <th style="width: 10%">数量</th>
                 <th style="width: 10%">金额</th>
                 <th style="width: 10%">合计</th>
+<!--                <th style="width: 25%">喜好</th>-->
+            </tr>
+        </table>
+    </div>
+
+    <div>
+        <h1 id="title3" style="text-align: center;margin-top: 30px;">思源学校订单总览</h1>
+    </div>
+
+    <div style="margin: 0px 50px;">
+        <table border="1" id="table3">
+            <tr id="th3">
+                <th style="width: 25%">品钟</th>
+                <th style="width: 45%">菜品</th>
+                <th style="width: 15%">数量</th>
+                <th style="width: 15%">金额</th>
+            </tr>
+        </table>
+    </div>
+
+
+    <div>
+        <h1 id="title4" style="text-align: center;margin-top: 100px;">思源学校订单详情</h1>
+    </div>
+
+    <div style="margin: 0px 50px;">
+        <table border="1" id="table4">
+            <tr id="th4">
+                <th style="width: 35%">姓名</th>
+<!--                <th style="width: 10%">手机尾号</th>-->
+                <th style="width: 30%">菜品</th>
+                <th style="width: 10%">数量</th>
+<!--                <th style="width: 10%">金额</th>-->
+                <th style="width: 10%">合计</th>
+                <th style="width: 15%">取餐时间</th>
             </tr>
         </table>
     </div>
@@ -124,38 +158,7 @@
 
     <div id="tuangou"></div>
 
-<!--    <div>-->
-<!--        <h1 id="title3" style="text-align: center;margin-top: 30px;">大观南地铁站订单总览</h1>-->
-<!--    </div>-->
 
-<!--    <div style="margin: 0px 50px;">-->
-<!--        <table border="1" id="table3">-->
-<!--            <tr id="th3">-->
-<!--                <th style="width: 25%">品钟</th>-->
-<!--                <th style="width: 45%">菜品</th>-->
-<!--                <th style="width: 15%">数量</th>-->
-<!--                <th style="width: 15%">金额</th>-->
-<!--            </tr>-->
-<!--        </table>-->
-<!--    </div>-->
-
-
-<!--    <div>-->
-<!--        <h1 id="title4" style="text-align: center;margin-top: 100px;">大观南地铁站订单详情</h1>-->
-<!--    </div>-->
-
-<!--    <div style="margin: 0px 50px;">-->
-<!--        <table border="1" id="table4">-->
-<!--            <tr id="th4">-->
-<!--                <th style="width: 15%">姓名</th>-->
-<!--                <th style="width: 10%">手机尾号</th>-->
-<!--                <th style="width: 30%">菜品</th>-->
-<!--                <th style="width: 25%">喜好</th>-->
-<!--                <th style="width: 10%">数量</th>-->
-<!--                <th style="width: 10%">合计</th>-->
-<!--            </tr>-->
-<!--        </table>-->
-<!--    </div>-->
 
 </body>
 <script>
@@ -166,8 +169,8 @@
 
     $(function () {
         getNow();
-        getTuangou_mt_xs();
-        getTuangou_tcc_pdd();
+        // getTuangou_mt_xs();
+        // getTuangou_tcc_pdd();
         getMeiTuanMaiCai();
     });
     //初始化时间控件
@@ -196,10 +199,10 @@
 
     function queryAndLoad(date) {
         if (date){
-            $('#title1').html('【' + date + '】 订单总览');
-            $('#title2').html('【' + date + '】 订单详情');
-            $('#title3').html('【' + date + '】 大观南路订单总览');
-            $('#title4').html('【' + date + '】 大观南路订单详情');
+            $('#title1').html('【' + date + '】 邮校订单总览');
+            $('#title2').html('【' + date + '】 邮校订单详情');
+            $('#title3').html('【' + date + '】 思源学校订单总览');
+            $('#title4').html('【' + date + '】 思源学校订单详情');
             $('#nowDate').val();
             $.ajax({
                 url: '/menu/orderReport',
@@ -245,9 +248,8 @@
                                 var spanCount = m.get(item.userId);
                                 var sum = m.get(item.userId + '_sum');
                                 var $tr = $('<tr class="tr_data2"></tr>');
-                                $tr.append('<td rowspan="' + spanCount + '">' + item.userName + '</td>');
+                                $tr.append('<td rowspan="' + spanCount + '">' + item.userName + (item.favorite ? '<br><a style="color: red;font-weight: bold;">' + item.favorite + '</a>' : '') + '</td>');
                                 $tr.append('<td>' + item.goodsName + item.type + '</td>');
-                                $tr.append('<td style="color: red;font-weight: bold;" rowspan="' + spanCount + '">' + (item.favorite ? item.favorite : '') + '</td>');
                                 if (item.num > 1){
                                     $tr.append('<td style="color: red">' + item.num + '</td>');
                                 }else {
@@ -340,16 +342,15 @@
                                 var spanCount = m.get(item.userId);
                                 var sum = m.get(item.userId + '_sum');
                                 var $tr = $('<tr class="tr_data4"></tr>');
-                                $tr.append('<td rowspan="' + spanCount + '">' + item.userName + '</td>');
-                                $tr.append('<td rowspan="' + spanCount + '">' + item.mobile + '</td>');
+                                $tr.append('<td rowspan="' + spanCount + '">' + item.userName + '<br>尾号：' + item.mobile  + (item.favorite ? '<br><a style="color: red;font-weight: bold;">' + item.favorite + '</a>' : '') + '</td>');
                                 $tr.append('<td>' + item.goodsName + item.type + '</td>');
-                                $tr.append('<td style="color: red;font-weight: bold;" rowspan="' + spanCount + '">' + (item.favorite ? item.favorite : '') + '</td>');
                                 if (item.num > 1){
                                     $tr.append('<td style="color: red">' + item.num + '</td>');
                                 }else {
                                     $tr.append('<td>' + item.num + '</td>');
                                 }
                                 $tr.append('<td rowspan="' + spanCount + '">' + sum + '</td>');
+                                $tr.append('<td rowspan="' + spanCount + '">' + item.pickupTime + '</td>');
                                 $('#table4').append($tr);
                             }else {
                                 var $tr = $('<tr class="tr_data4"></tr>');

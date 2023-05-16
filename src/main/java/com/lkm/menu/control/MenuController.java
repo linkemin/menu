@@ -28,6 +28,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Created by Linkm on 2022/5/14.
@@ -47,6 +48,10 @@ public class MenuController {
 
     @Autowired
     GoodsTypeJPA goodsTypeJPA;
+
+    @Autowired
+    GoodsJPA goodsJPA;
+
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -80,9 +85,19 @@ public class MenuController {
         return goodsTypeJPA.findAllByOrderByShowOrder();
     }
 
+    @GetMapping("/getGoodsTypeIsShow")
+    public Object getGoodsTypeIsShow(){
+
+        List<GoodsType> allByOrderByShowOrder = goodsTypeJPA.findAllByOrderByShowOrder();
+        allByOrderByShowOrder.stream().forEach(goodsType -> {
+            Set<Goods> goods = goodsType.getGoods();
+            goodsType.setGoods(new HashSet<>(goods.stream().filter(goods1 -> goods1.getShowFlag().equals("Y")).collect(Collectors.toList())));
+        });
+        return allByOrderByShowOrder;
+    }
 
     @PostMapping("/saveOrder")
-    public Object saveOrder(String id, String orderData){
+    public Object saveOrder(String id, String orderData, String pickupTime){
         Map<String, Object> resultMap = new HashMap<>();
         List<Map> orders = JSON.parseArray(orderData, Map.class);
 
@@ -113,6 +128,7 @@ public class MenuController {
         Order order = new Order();
         order.setUserId(Integer.valueOf(id));
         order.setTotalAmount("");
+        order.setPickupTime(pickupTime);
         Order result = orderJPA.save(order);
 
         //保存订单子集
@@ -138,7 +154,7 @@ public class MenuController {
      */
     @Transactional
     @PostMapping("/modifyOrder")
-    public Object modifyOrder(String id, String orderData, String orderId){
+    public Object modifyOrder(String id, String orderData, String orderId, String pickupTime){
         Map<String, Object> resultMap = new HashMap<>();
         List<Map> orders = JSON.parseArray(orderData, Map.class);
 
@@ -150,6 +166,7 @@ public class MenuController {
         Order order = new Order();
         order.setUserId(Integer.valueOf(id));
         order.setTotalAmount("");
+        order.setPickupTime(pickupTime);
         Order result = orderJPA.save(order);
 
         //保存订单子集
@@ -163,6 +180,26 @@ public class MenuController {
         orderJPA.save(result);
         resultMap.put("success", "true");
         return resultMap;
+    }
+
+
+    @PostMapping("/modifyGood")
+    public Object modifyGood(String id, String name, String price){
+        goodsJPA.findById(Integer.valueOf(id)).ifPresent(goods -> {
+            goods.setGoodsName(name);
+            goods.setGoodsprice(BigDecimal.valueOf(Double.valueOf(price)));
+            goodsJPA.save(goods);
+        });
+        return "success";
+    }
+
+    @PostMapping("/toggleShowFlag")
+    public Object toggleShowFlag(String id, String showFlag){
+        goodsJPA.findById(Integer.valueOf(id)).ifPresent(goods -> {
+            goods.setShowFlag("true".equals(showFlag)? "Y" : "N");
+            goodsJPA.save(goods);
+        });
+        return "success";
     }
 
     /**
@@ -224,13 +261,22 @@ public class MenuController {
         Map<String, Object> resultMap = new HashMap<>();
         User user = null;
         if (StringUtils.isEmpty(userId)){
-            //保存新用户
-            user = new User();
-            user.setUserName(userName);
-            user.setMobile(mobile);
-            user.setFavorite(favorite);
-            user.setUserType("1");
-            userJPA.save(user);
+            List<User> userExists = userJPA.findByUserNameAndMobile(userName, mobile);
+            if (userExists != null && userExists.size() > 0){
+                user = userExists.get(0);
+                user.setUserName(userName);
+                user.setMobile(mobile);
+                user.setFavorite(favorite);
+                userJPA.save(user);
+            }else {
+                //保存新用户
+                user = new User();
+                user.setUserName(userName);
+                user.setMobile(mobile);
+                user.setFavorite(favorite);
+                user.setUserType("1");
+                userJPA.save(user);
+            }
         }else {
             //修改
             Optional<User> userOptional = userJPA.findById(Integer.valueOf(userId));
@@ -297,13 +343,13 @@ public class MenuController {
      * @return
      */
     public List<OrderReportAll> getOrderReport(String dateBegin, String dateEnd) {
-        String sql="select gt.name as type,g.goods_name as goodsName,g.id as goodsId,sum(ob.num) as count, sum(g.goods_price * ob.num) as price  from menu.order o \n" +
+        String sql="select gt.name as type,g.goods_name as goodsName,g.id as goodsId,sum(ob.num) as count, sum(g.goods_price * ob.num) as price, o.pickup_time as pickupTime  from menu.order o \n" +
                 "inner join menu.user u on u.id = o.user_id and u.user_type = '0' \n" +
                 "left join order_b ob on o.id = ob.order_id\n" +
                 "left join goods g on g.id = ob.goods_id\n" +
                 "left join goods_type gt on gt.id = g.type_id \n" +
                 "where o.ts > ? and o.ts < ? \n" +
-                "group by gt.name,g.goods_name,g.id order by g.id " ;
+                "group by gt.name,g.goods_name,g.id, o.pickup_time order by g.id " ;
         List<Object> params = new ArrayList<>();
         params.add(dateBegin);
         params.add(dateEnd);
@@ -317,19 +363,19 @@ public class MenuController {
     }
 
     /**
-     * 获取大观南订单报表
+     * 获取思源学校订单报表
      * @param dateBegin
      * @param dateEnd
      * @return
      */
     public List<OrderReportAll> getDgnOrderReport(String dateBegin, String dateEnd) {
-        String sql="select gt.name as type,g.goods_name as goodsName,g.id as goodsId,sum(ob.num) as count, sum(g.goods_price * ob.num) as price  from menu.order o \n" +
+        String sql="select gt.name as type,g.goods_name as goodsName,g.id as goodsId,sum(ob.num) as count, sum(g.goods_price * ob.num) as price, o.pickup_time as pickupTime  from menu.order o \n" +
                 "inner join menu.user u on u.id = o.user_id and u.user_type = '1' \n" +
                 "left join order_b ob on o.id = ob.order_id\n" +
                 "left join goods g on g.id = ob.goods_id\n" +
                 "left join goods_type gt on gt.id = g.type_id \n" +
                 "where o.ts > ? and o.ts < ? \n" +
-                "group by gt.name,g.goods_name,g.id order by g.id " ;
+                "group by gt.name,g.goods_name,g.id, o.pickup_time order by g.id " ;
         List<Object> params = new ArrayList<>();
         params.add(dateBegin);
         params.add(dateEnd);
@@ -349,7 +395,7 @@ public class MenuController {
      * @return
      */
     public List<OrderReportAll> getOrderReportDetail(String dateBegin, String dateEnd) {
-        String sql="select o.user_id as userId, u.user_name as userName, u.favorite, gt.name as type,g.goods_name as goodsName,g.id as goodsId, g.goods_price as goodsPrice, ob.num from menu.order o \n" +
+        String sql="select o.user_id as userId, u.user_name as userName, u.favorite, gt.name as type,g.goods_name as goodsName,g.id as goodsId, g.goods_price as goodsPrice, ob.num, o.pickup_time as pickupTime from menu.order o \n" +
                 "left join order_b ob on o.id = ob.order_id\n" +
                 "left join goods g on g.id = ob.goods_id\n" +
                 "left join goods_type gt on gt.id = g.type_id \n" +
@@ -370,13 +416,13 @@ public class MenuController {
 
 
     /**
-     * 获取大观南订单报表详情
+     * 获取思源学校订单报表详情
      * @param dateBegin
      * @param dateEnd
      * @return
      */
     public List<OrderReportAll> getDgnOrderReportDetail(String dateBegin, String dateEnd) {
-        String sql="select o.user_id as userId, u.user_name as userName, u.favorite, u.mobile, gt.name as type,g.goods_name as goodsName,g.id as goodsId, g.goods_price as goodsPrice, ob.num from menu.order o \n" +
+        String sql="select o.user_id as userId, u.user_name as userName, u.favorite, u.mobile, gt.name as type,g.goods_name as goodsName,g.id as goodsId, g.goods_price as goodsPrice, ob.num, o.pickup_time as pickupTime from menu.order o \n" +
                 "left join order_b ob on o.id = ob.order_id\n" +
                 "left join goods g on g.id = ob.goods_id\n" +
                 "left join goods_type gt on gt.id = g.type_id \n" +

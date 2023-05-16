@@ -20,4 +20,6 @@ public interface UserJPA extends JpaRepository<User, Integer>, JpaSpecificationE
 
     @Query(value = "select user_name from menu.user where id=:userId  ", nativeQuery = true)
     String findUserNameByUserId(String userId);
+
+    List<User> findByUserNameAndMobile(String userName, String mobile);
 }

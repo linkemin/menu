@@ -21,6 +21,7 @@ public class OrderReportAll {
     private String userComment;//用户备注
     private String favorite;//用户偏好
     private String mobile;//手机尾号
+    private String pickupTime;//取餐时间
 
 
     public String getType() {
@@ -117,5 +118,13 @@ public class OrderReportAll {
 
     public void setMobile(String mobile) {
         this.mobile = mobile;
+    }
+
+    public String getPickupTime() {
+        return pickupTime;
+    }
+
+    public void setPickupTime(String pickupTime) {
+        this.pickupTime = pickupTime;
     }
 }

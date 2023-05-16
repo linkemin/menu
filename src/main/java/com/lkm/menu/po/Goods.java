@@ -35,6 +35,9 @@ public class Goods {
     @Column(name="goods_price")
     private BigDecimal goodsprice;
 
+    @Column(name="show_flag")
+    private String showFlag;
+
     public Integer getId() {
         return id;
     }
@@ -81,6 +84,14 @@ public class Goods {
 
     public void setGoodsType(GoodsType goodsType) {
         this.goodsType = goodsType;
+    }
+
+    public String getShowFlag() {
+        return showFlag;
+    }
+
+    public void setShowFlag(String showFlag) {
+        this.showFlag = showFlag;
     }
 
     public Goods() {
