@@ -48,9 +48,9 @@ public class MeiTuanController {
         skuIdList.add("95668");//曼可顿芝麻仔汉堡
         skuIdList.add("66355");//嘉顿快餐汉堡包
         skuIdList.add("230678");//桃李全麦
-        skuIdList.add("56596");//桃李醇熟
+//        skuIdList.add("56596");//桃李醇熟
         skuIdList.add("220808");//象大厨吐司
-        skuIdList.add("220907");//象大厨全麦吐司
+//        skuIdList.add("220907");//象大厨全麦吐司
         skuIdList.add("347239");//象大厨汉堡
 
 
@@ -60,7 +60,7 @@ public class MeiTuanController {
     @GetMapping("/mianbao")
     public Object maicai(){
         Map<String, Object> map = new HashMap<>();
-        ExecutorService executor = Executors.newFixedThreadPool(12);
+        ExecutorService executor = Executors.newFixedThreadPool(14);
         CompletableFuture<Object> tangdong = CompletableFuture.supplyAsync(() -> {
             return tangdong();
         }, executor);
@@ -78,6 +78,9 @@ public class MeiTuanController {
         }, executor);
         CompletableFuture<Object> cencun = CompletableFuture.supplyAsync(() -> {
             return cencun();
+        }, executor);
+        CompletableFuture<Object> huajing = CompletableFuture.supplyAsync(() -> {
+            return huajing();
         }, executor);
         CompletableFuture<Object> tangdong2 = CompletableFuture.supplyAsync(() -> {
             return tangdong2();
@@ -97,7 +100,9 @@ public class MeiTuanController {
         CompletableFuture<Object> cencun2 = CompletableFuture.supplyAsync(() -> {
             return cencun2();
         }, executor);
-
+        CompletableFuture<Object> huajing2 = CompletableFuture.supplyAsync(() -> {
+            return huajing2();
+        }, executor);
         CompletableFuture<Void> cf6 = CompletableFuture.allOf(tangdong, huangcun, dongpu, xintang, tianhegongyuan, cencun, tangdong2, huangcun2, dongpu2, xintang2, tianhegongyuan2, cencun2);
         CompletableFuture<Map<String, Object>> result = cf6.thenApply(v -> {
             Map<String, Object> resultMap = new HashMap<>();
@@ -107,12 +112,14 @@ public class MeiTuanController {
             resultMap.put("xintang", xintang.join());
             resultMap.put("tianhegongyuan", tianhegongyuan.join());
             resultMap.put("cencun", cencun.join());
+            resultMap.put("huajing", huajing.join());
             resultMap.put("tangdong2", tangdong2.join());
             resultMap.put("huangcun2", huangcun2.join());
             resultMap.put("dongpu2", dongpu2.join());
             resultMap.put("xintang2", xintang2.join());
             resultMap.put("tianhegongyuan2", tianhegongyuan2.join());
             resultMap.put("cencun2", cencun2.join());
+            resultMap.put("huajing2", huajing2.join());
             return resultMap;
         });
         try {
@@ -480,6 +487,56 @@ public class MeiTuanController {
                     "Referer: https://servicewechat.com/wx92916b3adca84096/294/page-frame.html\n";
             String body = httpget(httpinfo);
             return converstVO(body, "天河公园店");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return e.getMessage();
+        }
+    }
+
+    public static Object huajing(){
+        try {
+            String httpinfo = "GET https://mall.meituan.com/api/c/poi/10000656/sku/search/v2?uuid=18856ade013c8-b47871c31be18-0-505c8-18856ade013c8&xuuid=18856ade013c8-b47871c31be18-0-505c8-18856ade013c8&__reqTraceID=52359d1b-3de2-3ec9-5b0b-f3e0ced92b8d&platform=ios&utm_medium=wxapp&brand=xiaoxiangmaicai&tenantId=1&utm_term=5.49.10&isClosed=false&offset=0&limit=30&poiId=10000656&keyword=%E5%90%90%E5%8F%B8&quickSearchWord=false&from=wri&last=1&personalRecommendClose=0&poi=10000656&stockPois=10000656&ci=4&bizId=2&deliveryRegionKey=6666&openId=oV_5G44V8wczpt0vLyDtamkpkI3I&sysName=iOS&sysVerion=16.4.1&app_tag=union&uci=4&userid=2420341450 HTTP/1.1\n" +
+                    "Host: mall.meituan.com\n" +
+                    "Connection: keep-alive\n" +
+                    "openId: oV_5G44V8wczpt0vLyDtamkpkI3I\n" +
+                    "content-type: multipart/form-data\n" +
+                    "traceids: 33213f94#7457282a\n" +
+                    "req_of_maicai: 1\n" +
+                    "location: 113.36476019965278,23.1353466796875\n" +
+                    "deliveryAddrLocation: 0,0\n" +
+                    "t: AgGCI5cHx_xZBwPSnyqrLGtysM3peMf0R8yyYywO6t02XP43oPN1_TrmRnIkDtYMKJK8b-IEcK6UngAAAACWGAAAje_RJiZJZM3yMOs-pcrNkZ45TK33m0XMca45URqCOENDEE3vTtJ7wP2i8c1eVHSP\n" +
+                    "mtgsig: {\"a1\":\"1.1\",\"a2\":1685081623918,\"a3\":\"1685081415713UUSEUWWc1441723a14c81d5c039e15737d6304f9634\",\"a4\":\"157a7dc5565a628cc57d7a158c625a56ab70cb4327129115\",\"a5\":\"Ub8XtzM+xo4nVcM17EFLcK89JD0gL7hwinKWzAh5jAvJQARevGBV4KYTBn9EdgH492hnBVmPFy42igsI58pgPBpRd7DjHcHF5zf6r0tdq4YnUqg6eaCAVqaorcAnNuzfvOYcfC3jiTmzs2NpSnA/J2WmrALRQi7fTdiRPv0ay+bdHfan/gbbHghVkzls566dyc/V/klHGqQw5OdUmqWcnzyvaU+dVybk\",\"a6\":\"w1.1e9phs5n+FlVVQUtcvECgDMg0s6Wszm74WTQp1VvNAqKEtDQaNezI5faGxSFb40PwG0yOXVUnLSFl4oejEkvBV21/WWicfW7WdvKKSD0rgzqPgGv2DNtk3cgzW3aVmizP2Jpt6liFd29ZcQlQHgQ9cpN1x8ktVa7w2BAqtAGrcSEodavBLwT88G1ZWAnZzsIR02G0kraGKtZrLDBqOQcR/jaLbO7K/6nqGw1oiferC12yGp8Yhm96Et2zdVTs8FSxGVBNA3Yb96NksaXVrV/p2EmS81yaYGl6IwePCgdM6tM38XP8Pfkmt6qqHMCtFhPEGSZyHAXwHL/PuDaE0qb4GLNYAXMCmuYXKtuGfcWXpQQ0LNhdnjAtcdQPqQ7ASqsI+3pOGQNsYnJPm2XjptFMlQQ1dBe3MqmYpL1GyijiV1cMThCZ0vvxRDh6plZgsPymGzQgcX5RerbbMrNfMqYMx41BNo6WT2RU7SkBopMdELnsToxgOAmE5bLID2akambOEF1d2wx32ncE4QkqzLKeCmC3mT92Kcv8tCcN02947+bHOMafRmdmj5rNCUxsTFo9N6g50TvsD5ndlKQXyhi1xzhanTZnKWgMP+lDfJq25K4IZ6L1Il0FWSIRw4Htvx70aqR9y5W0H5xukQbF+FADHwsFAzvkLLDt1oQmGHLTXWzYQAvkgVQ8gqlDWIseoTIozxZ1gwSn8G1QT/EmkvVU2jcEsjgj7gY7HQVYXi7VrbTWI3usLBzNDFiHywObTPVAQ+zqUXlJuqpaudzBlLB3TCQgQz91BVdxDAZy3fi0G9Q=\",\"a7\":\"wx92916b3adca84096\",\"x0\":3,\"d1\":\"3b387d4b8649109a2ff07bdd7696880f\"}\n" +
+                    "openIdCipher: AwQAAABJAgAAAAEAAAAyAAAAPLgC95WH3MyqngAoyM/hf1hEoKrGdo0pJ5DI44e1wGF9AT3PH7Wes03actC2n/GVnwfURonD78PewMUppAAAADg6KVehsOCVvNGnuL/d/t+t2xx3uo8amZjEVMGqu3DP6z0EcGt0AGVD8kW9cuh8DR+/F7E6azEAEg==\n" +
+                    "Accept-Encoding: gzip,compress,br,deflate\n" +
+                    "User-Agent: Mozilla/5.0 (iPhone; CPU iPhone OS 16_4_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 MicroMessenger/8.0.37(0x1800252a) NetType/4G Language/zh_CN\n" +
+                    "Referer: https://servicewechat.com/wx92916b3adca84096/311/page-frame.html";
+            String body = httpget(httpinfo);
+            return converstVO(body, "华景店");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return e.getMessage();
+        }
+    }
+
+    public static Object huajing2(){
+        try {
+            String httpinfo = "GET https://mall.meituan.com/api/c/poi/10000656/sku/search/v2?uuid=18856ade013c8-b47871c31be18-0-505c8-18856ade013c8&xuuid=18856ade013c8-b47871c31be18-0-505c8-18856ade013c8&__reqTraceID=ed2969cd-d9e5-b647-97eb-4d110bd6bc78&platform=ios&utm_medium=wxapp&brand=xiaoxiangmaicai&tenantId=1&utm_term=5.49.10&isClosed=false&offset=0&limit=30&poiId=10000656&keyword=%E6%B1%89%E5%A0%A1&quickSearchWord=false&from=wri&last=0&personalRecommendClose=0&poi=10000656&stockPois=10000656&ci=4&bizId=2&deliveryRegionKey=6666&openId=oV_5G44V8wczpt0vLyDtamkpkI3I&sysName=iOS&sysVerion=16.4.1&app_tag=union&uci=4&userid=2420341450 HTTP/1.1\n" +
+                    "Host: mall.meituan.com\n" +
+                    "Connection: keep-alive\n" +
+                    "openId: oV_5G44V8wczpt0vLyDtamkpkI3I\n" +
+                    "content-type: multipart/form-data\n" +
+                    "traceids: 33213f94#7457282a\n" +
+                    "req_of_maicai: 1\n" +
+                    "location: 113.36476019965278,23.1353466796875\n" +
+                    "deliveryAddrLocation: 0,0\n" +
+                    "t: AgGCI5cHx_xZBwPSnyqrLGtysM3peMf0R8yyYywO6t02XP43oPN1_TrmRnIkDtYMKJK8b-IEcK6UngAAAACWGAAAje_RJiZJZM3yMOs-pcrNkZ45TK33m0XMca45URqCOENDEE3vTtJ7wP2i8c1eVHSP\n" +
+                    "mtgsig: {\"a1\":\"1.1\",\"a2\":1685081561583,\"a3\":\"1685081415713UUSEUWWc1441723a14c81d5c039e15737d6304f9634\",\"a4\":\"c2353b6bc1b66aab6b3b35c2ab6ab6c1842285942f483355\",\"a5\":\"K4/HlH/4ot+nVmd6IA8Fh8Z4m1iCjHgJVElUwqd/WllV6AlkdRYBrv0qOuy1DsGbYz6mDrd8AwBJ4ybaoHql0CZ0LQgXAddd/ApT+h2SBUM+1Mf1ABhZktuY7t0f7GaZbsJdNpB38TITDgL4yZ+E5qEVhArhgtv1L908bn654axw8cXm4XK3RqB08szHuZYuJrQURs2thz4v5rwEhfKlc5Q2hPJgmb+n\",\"a6\":\"w1.1sQqtC2zTqQ5VEwr4iQEjmnTQr3WlGd6j6X4M2+LjeQypVu+eSk+JnA9e3NHUdqA+c5NrxuZF0ASdERg2Gf5UhhjxCBOyN6XemOWSI1VW5+MvKb1Q45whWCdJHiZfqtIWa+8BpzhkXA0Thg/W4kMqIvvID3wQjM9cxHKTy54nylAT7WYyfbnOb13Urh/p39zXb4tfbKsJImwBFuLRcWiz1CRIiymAqHJNXPGEsVZanHP8olJDVFUgbSeXKtiL21KDY7ykwX0ufEl59qRhV5P/u9asRV7Dp7p9NZqg8NEwwwGMhA4BlLuRsxZ27eMFMsmdvcEFZ2VpTdtHlFR5YMNSjmO3iLlRKKI9HGTzVXF7o9Ju6bkyddLOwnujj4QftCvhZArfcDTfdp7Ru3GpaWUlE6OLab8H/VNl+AAShoJ47+M/wRtK3vOHVqrITagoPbhsnsXg+siP1Fr16UQABw1R3U+gTQdrQiCQj0/ltfpnbz4+nopvEDUzGCAp1CF0csoGeYF+M573T1Kqd2abAqFC3HfQHYJqtQcZbfmd9n+POoWb3b97rq76PBFKP1rV5gg0bNdpldmlzy+DyGRYHNC9q2Jb61e+jvTvBLuCQLnUptyco6eTuXj4QE7mUyrluNxEZO7JJv1tFjwFhewClU2Z7YPDBSD4wxpzQ559amNHCWBqqfkeBMsWzu5hKwNkZ9qzRWngEKZdXkpnc5swhI1hSxqV6tuIXqN4lu+dOPedXlM=\",\"a7\":\"wx92916b3adca84096\",\"x0\":3,\"d1\":\"3c0637e469095b84a36d4a6601b49d11\"}\n" +
+                    "openIdCipher: AwQAAABJAgAAAAEAAAAyAAAAPLgC95WH3MyqngAoyM/hf1hEoKrGdo0pJ5DI44e1wGF9AT3PH7Wes03actC2n/GVnwfURonD78PewMUppAAAADg6KVehsOCVvNGnuL/d/t+t2xx3uo8amZjEVMGqu3DP6z0EcGt0AGVD8kW9cuh8DR+/F7E6azEAEg==\n" +
+                    "Accept-Encoding: gzip,compress,br,deflate\n" +
+                    "User-Agent: Mozilla/5.0 (iPhone; CPU iPhone OS 16_4_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 MicroMessenger/8.0.37(0x1800252a) NetType/4G Language/zh_CN\n" +
+                    "Referer: https://servicewechat.com/wx92916b3adca84096/311/page-frame.html";
+            String body = httpget(httpinfo);
+            return converstVO(body, "华景店");
         } catch (Exception e) {
             e.printStackTrace();
             return e.getMessage();
