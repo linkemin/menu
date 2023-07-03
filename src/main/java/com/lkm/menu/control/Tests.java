@@ -13,6 +13,8 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
@@ -27,9 +29,7 @@ import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -87,45 +87,6 @@ public class Tests {
 
 
 
-    public static void main(String[] args) {
-        System.out.println(DateFormatUtil.getDateStr(DateFormatUtil.getDefOfDay(new Date(), "09:00:00"), "yyyy-MM-dd HH:mm:ss"));
-        System.out.println(DateFormatUtil.getDateStr(DateFormatUtil.getDefOfDay(new Date(), "18:00:00"), "yyyy-MM-dd HH:mm:ss"));
-//        System.out.println(DateFormatUtil.comparedate(DateFormatUtil.getDateFormatStr("yyyy-MM-dd HH:mm:ss"), DateFormatUtil.getDateFormatStr("yyyy-MM-dd HH:mm:ss"), "yyyy-MM-dd HH:mm:ss"));
-//        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd hh:mm");
-//        Date disabledate;
-//        try {
-//            try {
-//                disabledate = df.parse("2022-10-11 12:12:12");
-//                System.out.println(disabledate.toString());
-//            } catch (java.text.ParseException e) {
-//                e.printStackTrace();
-//            }
-//        } catch (ParseException e) {
-//            e.printStackTrace();
-//        }
-//        ExecutorService executor = Executors.newFixedThreadPool(2);
-//        CompletableFuture<Void> future1 = CompletableFuture.runAsync(()->{
-//            System.out.println("fu1："+Thread.currentThread().getName());
-//        }, executor);
-//        CompletableFuture<Void> future2 = CompletableFuture.runAsync(()->{
-//            System.out.println("fu2："+Thread.currentThread().getName());
-//        }, executor);
-//        CompletableFuture<Void> future3 = CompletableFuture.runAsync(()->{
-//            System.out.println("fu3："+Thread.currentThread().getName());
-//        }, executor);
-//        CompletableFuture<Void> future4 = CompletableFuture.runAsync(()->{
-//            System.out.println("fu4："+Thread.currentThread().getName());
-//        }, executor);
-
-
-//        System.out.println("get result: " + future.join());
-
-//        try {
-//            getDetail();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-    }
 
 
     public static void getDetail() throws IOException {
@@ -191,5 +152,60 @@ public class Tests {
         String data = jsonObject.getString("data");//获取到data值       //拼接双引号： "\""+    +"\""
         System.out.println(data);
 
+    }
+
+    public static String post(String url, Map<String, String> headers, Map<String, String> body) {
+//        if (StringUtils.isBlank(url)){
+//            return "";
+//        }
+//        if (headers == null){
+//            headers = new HashMap<>();
+//            headers.put("X-APP-ID", propertiesConfig.getAppId());
+//            headers.put("X-APP-KEY", propertiesConfig.getAppKey());
+//            headers.put("appKey", propertiesConfig.getHlwAppkey());
+//            headers.put("appSecret", propertiesConfig.getHlwAppSecret());
+//        }
+        CloseableHttpClient httpClient = HttpClients.createDefault();
+        HttpPost httpPost = new HttpPost(url);
+
+        //设置headers
+        headers.forEach((key, value) -> {
+            httpPost.addHeader(key, value);
+        });
+
+        //设置body
+        List<BasicNameValuePair> param = new ArrayList<>();
+        body.forEach((key, value) -> {
+            param.add(new BasicNameValuePair(key, value));
+        });
+
+        StringEntity stringEntity = new StringEntity(JSON.toJSONString(body), ContentType.APPLICATION_JSON);
+        httpPost.setEntity(stringEntity);
+        CloseableHttpResponse response = null;//执行请求
+        try {
+            response = httpClient.execute(httpPost);
+            String result = EntityUtils.toString(response.getEntity());//获取响应内容
+            return result;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static void main(String[] args) {
+        String url = "http://eop-api-cloud.mss.ctc.com:12500/serviceAgent/rest/hlwmssCloud/getUserByMobile";
+        HashMap<String, String> headers = new HashMap<>();
+        HashMap<String, String> body = new HashMap<>();
+
+        headers.put("X-APP-ID", "7aa0d28970fe5212a0344d66b9adc3ec");
+        headers.put("X-APP-KEY", "009f92f50283a094be66c451c0dd73f9");
+        headers.put("appKey", "HJiAt9KtBNR+pL+h9EMSoA==");
+        headers.put("appSecret", "qzqbZP+pUijP1DtS4urARQ==");
+
+        body.put("requestId", "000120230620");
+        body.put("appcode", "hrpre");
+        body.put("mobile", "13022056642");
+
+        String post = post(url, headers, body);
+        System.out.println(post);
     }
 }

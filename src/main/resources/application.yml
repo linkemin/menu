@@ -3,7 +3,7 @@ spring:
     name: menu_application
   datasource:
     #url切换数据库之后如果对应数据库名称和路径有变动，需要修改url
-    url: jdbc:mysql://linkm.e4.luyouxia.net:42150/menu?useUnicode=true&characterEncoding=utf-8&autoReconnect=true&useSSL=false
+    url: jdbc:mysql://linkm.e3.luyouxia.net:12984/menu?useUnicode=true&characterEncoding=utf-8&autoReconnect=true&useSSL=false
     username: root
     password: 123456
     driver-class-name: com.mysql.cj.jdbc.Driver

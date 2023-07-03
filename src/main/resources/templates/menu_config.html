@@ -296,8 +296,8 @@
         name = $('#goodsName').val();
         price = $('#goodsPrice').val();
         $.post('/menu/modifyGood', {id: id, name: name, price: price}, function (data) {
-            $('li[value=' + id + ']').children().eq(0).text(name);
-            $('li[value=' + id + ']').children().eq(1).text(price + '元');
+            $('li[value=' + id + ']').children().eq(0).children().eq(0).text(name);
+            $('li[value=' + id + ']').children().eq(0).children().eq(1).text(price + '元');
         })
         layer.closeAll();
     }
