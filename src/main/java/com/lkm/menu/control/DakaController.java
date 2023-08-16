@@ -257,6 +257,8 @@ public class DakaController {
                     if (matcher.find()) {
                         url = matcher.group();
                         url = url.trim();
+                    }else {
+                        url = lineText.substring(5, lineText.length() - 9);
                     }
                     part = "2";
                     continue;
@@ -280,6 +282,9 @@ public class DakaController {
             }
 
             CloseableHttpClient httpClient = HttpClients.createDefault();
+            if (!url.startsWith("https")){
+                url = "https://" + headers.get("Host") + url;
+            }
             HttpPost httpPost = new HttpPost(url);
             headers.forEach((key, value) -> {
                 if (!"Content-Length".equals(key)){
@@ -323,6 +328,8 @@ public class DakaController {
                     if (matcher.find()) {
                         url = matcher.group();
                         url = url.trim();
+                    }else {
+                        url = lineText.substring(5);
                     }
                     part = "2";
                     continue;
@@ -346,12 +353,16 @@ public class DakaController {
             }
 
             CloseableHttpClient httpClient = HttpClients.createDefault();
+            if (!url.startsWith("https")){
+                url = "https://" + headers.get("Host") + url;
+            }
             HttpPost httpPost = new HttpPost(url);
             headers.forEach((key, value) -> {
                 if (!"Content-Length".equals(key)){
                     httpPost.addHeader(key, value);
                 }
             });
+
 
             List<BasicNameValuePair> param = new ArrayList<>();
             body.forEach((key, value) -> {
