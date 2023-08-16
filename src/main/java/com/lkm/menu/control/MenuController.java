@@ -210,8 +210,8 @@ public class MenuController {
     @PostMapping("/orderReport")
     public Object orderReport(String date){
         String tomorrow = DateFormatUtil.getPreDayDateByDate(date, -1);
-        date = date + " 06:00:00";
-        tomorrow = tomorrow + " 06:00:00";
+        date = date + " 09:00:00";
+        tomorrow = tomorrow + " 09:00:00";
         Map<String, Object> map = new HashMap<>();
         List<OrderReportAll> orderReport = getOrderReport(date, tomorrow);
         List<OrderReportAll> orderReportDetail = getOrderReportDetail(date, tomorrow);
@@ -228,8 +228,8 @@ public class MenuController {
     @PostMapping("/orderDgnReport")
     public Object orderDgnReport(String date){
         String tomorrow = DateFormatUtil.getPreDayDateByDate(date, -1);
-        date = date + " 06:00:00";
-        tomorrow = tomorrow + " 06:00:00";
+        date = date + " 09:00:00";
+        tomorrow = tomorrow + " 09:00:00";
         Map<String, Object> map = new HashMap<>();
         List<OrderReportAll> orderReport = getDgnOrderReport(date, tomorrow);
         List<OrderReportAll> orderReportDetail = getDgnOrderReportDetail(date, tomorrow);
@@ -303,7 +303,7 @@ public class MenuController {
     public Object userOrderDetail(String userId){
         String today = DateFormatUtil.getDateStr(new Date(), "YYYY-MM-dd");
         String beford30Day = DateFormatUtil.getPreDayDateByDate(today, 30);
-        beford30Day = beford30Day + " 06:00:00";
+        beford30Day = beford30Day + " 09:00:00";
         Map<String, Object> map = new HashMap<>();
         List<UserOrderDetail> userOrderDetail = getUserOrderDetail(userId, beford30Day);
         map.put("userOrderDetail", userOrderDetail);
@@ -329,7 +329,7 @@ public class MenuController {
             today = DateFormatUtil.getPreDayDateByDate(today, 1);
         }
 
-        today = today + " 06:00:00";
+        today = today + " 09:00:00";
         Map<String, Object> map = new HashMap<>();
         List<UserOrderDetail> userOrderDetail = getUserOrderDetail(userId, today);
         map.put("userOrderDetail", userOrderDetail);
