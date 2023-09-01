@@ -244,6 +244,10 @@ public class DakaController {
         String lineText;
         String part = "1";
         String url = "";
+        String token = httpinfo.getToken();
+        String a00 = httpinfo.getA00();
+        String oldToken = "";
+        String oldA00 = "";
         Map<String, String> headers = new HashMap<>();
         Map<String, String> body = new HashMap<>();
 
@@ -269,6 +273,12 @@ public class DakaController {
                     }else {
                         String[] header = lineText.split(":");
                         headers.put(header[0], header[1].trim());
+                        if ("yht_access_token".equals(header[0])){
+                            oldToken = header[1].trim();
+                        }
+                        if ("a00".equals(header[0])){
+                            oldA00 = header[1].trim();
+                        }
                     }
                 }else if ("3".equals(part)){
                     String[] split = lineText.split("&");
@@ -281,6 +291,15 @@ public class DakaController {
 
             }
 
+            if (!StringUtils.isEmpty(token) && !StringUtils.isEmpty(a00)){
+                //token不为空，且a00不为空，则覆盖
+                url = url.replace(oldToken, token);
+                Set<String> keys = headers.keySet();
+                for (String key : keys) {
+                    headers.put(key, headers.get(key).replaceAll(oldToken, token));
+                    headers.put(key, headers.get(key).replaceAll(oldA00, a00));
+                }
+            }
             CloseableHttpClient httpClient = HttpClients.createDefault();
             if (!url.startsWith("https")){
                 url = "https://" + headers.get("Host") + url;

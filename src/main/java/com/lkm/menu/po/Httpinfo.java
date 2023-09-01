@@ -35,6 +35,12 @@ public class Httpinfo {
     @Column(name="scheduled")
     private String scheduled;
 
+    @Column(name="token")
+    private String token;
+
+    @Column(name="a00")
+    private String a00;
+
     public Integer getId() {
         return id;
     }
@@ -93,5 +99,21 @@ public class Httpinfo {
 
     public void setScheduled(String scheduled) {
         this.scheduled = scheduled;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
+
+    public String getA00() {
+        return a00;
+    }
+
+    public void setA00(String a00) {
+        this.a00 = a00;
     }
 }
