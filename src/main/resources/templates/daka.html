@@ -351,19 +351,60 @@
     }
 
     function modifyHttpinfo() {
-        $.ajax({
-            url: '/daka/save',
-            method: 'post',
-            data: {userId: $('#user').attr('user_id'), httpInfo: $('#httpinfo').val()},
-            success: function(data){
-                layer.closeAll();
-                alert('修改成功！');
-            },
-            error: function (data) {
-                layer.closeAll();
-                alert(data);
+        var httpinfo = $('#httpinfo').val();
+        var httpinfoArr = httpinfo.split('\n');
+        var hastoken = false;
+        var hasa00 = false;
+        var hasHost = false;
+        var hasAccept = false;
+        var token = '';
+        var a00 = '';
+        httpinfoArr.forEach(function(value){
+            var kv = value.split(':');
+            if (kv[0] == 'yht_access_token'){
+                hastoken = true;
+                token = kv[1].trim();
+            }
+            if (kv[0] == 'a00'){
+                hasa00 = true;
+                a00 = kv[1].trim();
+            }
+            if (kv[0] == 'Host'){
+                hasHost = true;
+            }
+            if (kv[0] == 'Accept-Encoding'){
+                hasAccept = true;
             }
         })
+        if (hastoken && hasa00){
+            //有token与a00，提示更改全量报文还是仅更改token与a00
+            var contentData = new Object();
+            if (hasHost && hasAccept){
+                if (confirm('确定--更改全量请求报文（适用于初次提交打卡报文）\n取消--仅更改yht_access_token与a00（适用于报文过期更新）') == true){
+                    contentData = {userId: $('#user').attr('user_id'), httpInfo: $('#httpinfo').val()};
+                }else {
+                    contentData = {userId: $('#user').attr('user_id'), a00: a00, token: token};
+                }
+            }else {
+                contentData = {userId: $('#user').attr('user_id'), a00: a00, token: token};
+            }
+            $.ajax({
+                url: '/daka/save',
+                method: 'post',
+                data: contentData,
+                success: function(data){
+                    layer.closeAll();
+                    alert('修改成功！');
+                },
+                error: function (data) {
+                    layer.closeAll();
+                    alert(data);
+                }
+            })
+        }else {
+            //提示缺少token与a00
+            alert('报文缺少【yht_access_token】与【a00】，请重新抓取报文！')
+        }
     }
 
     function submitOrder() {

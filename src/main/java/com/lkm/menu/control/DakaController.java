@@ -66,11 +66,16 @@ public class DakaController {
      * @param httpInfo
      */
     @PostMapping("/save")
-    public void save(Integer userId, String httpInfo){
+    public void save(Integer userId, String httpInfo, String token, String a00){
         List<Httpinfo> httpinfos = httpInfoJPA.findByUserId(userId);
         if (httpinfos.size() > 0){
             Httpinfo httpinfovo = httpinfos.get(0);
-            httpinfovo.setHttpinfo(httpInfo);
+            if (!StringUtils.isEmpty(httpInfo)){
+                httpinfovo.setHttpinfo(httpInfo);
+            }else {
+                httpinfovo.setToken(token);
+                httpinfovo.setA00(a00);
+            }
             httpInfoJPA.save(httpinfovo);
         }
     }
@@ -107,6 +112,10 @@ public class DakaController {
                 String nowStr = df.format(now);
                 httpinfovo.setLasttime(new Timestamp(now.getTime()));
                 httpinfovo.setLastinfo(postMsg);
+                if (StringUtils.isEmpty(postMsg)){
+                    httpinfovo.setA00("");
+                    httpinfovo.setToken("");
+                }
                 httpInfoJPA.saveAndFlush(httpinfovo);
                 String mail = httpinfovo.getMail();
 
@@ -218,6 +227,10 @@ public class DakaController {
         String postMsg = post(httpinfo);
         httpinfo.setLasttime(new Timestamp(now.getTime()));
         httpinfo.setLastinfo(postMsg);
+        if (StringUtils.isEmpty(postMsg)){
+            httpinfo.setA00("");
+            httpinfo.setToken("");
+        }
         httpInfoJPA.saveAndFlush(httpinfo);
         String mail = httpinfo.getMail();
         if (StringUtils.isEmpty(postMsg) && !StringUtils.isEmpty(mail)){
