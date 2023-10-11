@@ -48,6 +48,7 @@ public class MeiTuanController {
         skuIdList.add("95668");//曼可顿芝麻仔汉堡
         skuIdList.add("66355");//嘉顿快餐汉堡包
         skuIdList.add("230678");//桃李全麦
+        skuIdList.add("111016");//桃李原味
 //        skuIdList.add("56596");//桃李醇熟
         skuIdList.add("220808");//象大厨吐司
 //        skuIdList.add("220907");//象大厨全麦吐司
@@ -61,50 +62,22 @@ public class MeiTuanController {
     public Object maicai(){
         Map<String, Object> map = new HashMap<>();
         ExecutorService executor = Executors.newFixedThreadPool(14);
-        CompletableFuture<Object> tangdong = CompletableFuture.supplyAsync(() -> {
-            return tangdong();
-        }, executor);
-        CompletableFuture<Object> huangcun = CompletableFuture.supplyAsync(() -> {
-            return huangcun();
-        }, executor);
-        CompletableFuture<Object> dongpu = CompletableFuture.supplyAsync(() -> {
-            return dongpu();
-        }, executor);
-        CompletableFuture<Object> xintang = CompletableFuture.supplyAsync(() -> {
-            return xintang();
-        }, executor);
-        CompletableFuture<Object> tianhegongyuan = CompletableFuture.supplyAsync(() -> {
-            return tianhegongyuan();
-        }, executor);
-        CompletableFuture<Object> cencun = CompletableFuture.supplyAsync(() -> {
-            return cencun();
-        }, executor);
-        CompletableFuture<Object> huajing = CompletableFuture.supplyAsync(() -> {
-            return huajing();
-        }, executor);
-        CompletableFuture<Object> tangdong2 = CompletableFuture.supplyAsync(() -> {
-            return tangdong2();
-        }, executor);
-        CompletableFuture<Object> huangcun2 = CompletableFuture.supplyAsync(() -> {
-            return huangcun2();
-        }, executor);
-        CompletableFuture<Object> dongpu2 = CompletableFuture.supplyAsync(() -> {
-            return dongpu2();
-        }, executor);
-        CompletableFuture<Object> xintang2 = CompletableFuture.supplyAsync(() -> {
-            return xintang2();
-        }, executor);
-        CompletableFuture<Object> tianhegongyuan2 = CompletableFuture.supplyAsync(() -> {
-            return tianhegongyuan2();
-        }, executor);
-        CompletableFuture<Object> cencun2 = CompletableFuture.supplyAsync(() -> {
-            return cencun2();
-        }, executor);
-        CompletableFuture<Object> huajing2 = CompletableFuture.supplyAsync(() -> {
-            return huajing2();
-        }, executor);
-        CompletableFuture<Void> cf6 = CompletableFuture.allOf(tangdong, huangcun, dongpu, xintang, tianhegongyuan, cencun, tangdong2, huangcun2, dongpu2, xintang2, tianhegongyuan2, cencun2);
-        CompletableFuture<Map<String, Object>> result = cf6.thenApply(v -> {
+        CompletableFuture<Object> tangdong = CompletableFuture.supplyAsync(MeiTuanController::tangdong, executor);
+        CompletableFuture<Object> huangcun = CompletableFuture.supplyAsync(MeiTuanController::huangcun, executor);
+        CompletableFuture<Object> dongpu = CompletableFuture.supplyAsync(MeiTuanController::dongpu, executor);
+        CompletableFuture<Object> xintang = CompletableFuture.supplyAsync(MeiTuanController::xintang, executor);
+        CompletableFuture<Object> tianhegongyuan = CompletableFuture.supplyAsync(MeiTuanController::tianhegongyuan, executor);
+        CompletableFuture<Object> cencun = CompletableFuture.supplyAsync(MeiTuanController::cencun, executor);
+        CompletableFuture<Object> huajing = CompletableFuture.supplyAsync(MeiTuanController::huajing, executor);
+        CompletableFuture<Object> tangdong2 = CompletableFuture.supplyAsync(MeiTuanController::tangdong2, executor);
+        CompletableFuture<Object> huangcun2 = CompletableFuture.supplyAsync(MeiTuanController::huangcun2, executor);
+        CompletableFuture<Object> dongpu2 = CompletableFuture.supplyAsync(MeiTuanController::dongpu2, executor);
+        CompletableFuture<Object> xintang2 = CompletableFuture.supplyAsync(MeiTuanController::xintang2, executor);
+        CompletableFuture<Object> tianhegongyuan2 = CompletableFuture.supplyAsync(MeiTuanController::tianhegongyuan2, executor);
+        CompletableFuture<Object> cencun2 = CompletableFuture.supplyAsync(MeiTuanController::cencun2, executor);
+        CompletableFuture<Object> huajing2 = CompletableFuture.supplyAsync(MeiTuanController::huajing2, executor);
+        CompletableFuture<Map<String, Object>> result = CompletableFuture.allOf(tangdong, huangcun, dongpu, xintang, tianhegongyuan, cencun, tangdong2, huangcun2, dongpu2, xintang2, tianhegongyuan2, cencun2)
+                .thenApply(v -> {
             Map<String, Object> resultMap = new HashMap<>();
             resultMap.put("tangdong", tangdong.join());
             resultMap.put("huangcun", huangcun.join());
