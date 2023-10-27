@@ -367,10 +367,16 @@
             if (kv[0] == 'yht_access_token'){
                 hastoken = true;
                 token = kv[1].trim();
+                if (token.endsWith(";")){
+                    token = token.substring(0, token.length-1)
+                }
             }
             if (kv[0] == 'a00'){
                 hasa00 = true;
                 a00 = kv[1].trim();
+                if (a00.endsWith(";")){
+                    a00 = a00.substring(0, a00.length-1)
+                }
             }
             if (kv[0] == 'Host'){
                 hasHost = true;
