@@ -338,7 +338,10 @@
     function regHttpinfo() {
         var $html = $('<div></div>');
         var $html1 = $('<div style="text-align: center;"><a style="width:25%;margin-left:5%;">请在下方输入Fiddler抓包报文</a></div><br>');
-        var $html2 = $('<div style="text-align: center;"><textarea id="httpinfo" style="width: 90%;height: 600px;"></textarea></div><br>');
+        var $html2 = $('<div style="text-align: center;"><textarea id="httpinfo" style="width: 90%;height: 600px;font-size: 40px;" placeholder="请填入yht_access_token与a00，如：\n' +
+            'yht_access_token: xxxxxxxx\n' +
+            'a00: xxxxxxxx\n' +
+            '"></textarea></div><br>');
         var $html3 = $('<div style="text-align: center;"><input style="width: 35%;float: none;height: 60px;" class="btn btn-success radius" type="button" value="确定" onclick="modifyHttpinfo()"><input style="width: 35%;float: none;height: 60px;margin-right: 0px;" class="btn btn-danger radius" type="button" value="取消" onclick="javascript:layer.closeAll()"></div><br>');
         $html.append($html1).append($html2).append($html3);
 
