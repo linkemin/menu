@@ -147,7 +147,7 @@ public class DakaController {
     /**
      * 上班卡
      */
-    @Scheduled(cron = "15/30 * 8 ? * MON-FRI")
+    @Scheduled(cron = "00/7 * 8 ? * MON-FRI")
     public void shangban(){
         List<Httpinfo> all = httpInfoJPA.findByScheduled("Y");
         Date now = new Date();
@@ -162,7 +162,7 @@ public class DakaController {
                 }
             }
             double random = Math.random() * 100L;
-            if (random < 3){
+            if (random < 2){
                 autoPost(now, httpinfo);
             }else if(Integer.valueOf(DateFormatUtil.getDateFormatStr("mm")) > 50){
                 //超过50分时间阈值则立刻打卡
@@ -174,7 +174,7 @@ public class DakaController {
     /**
      * 下班卡
      */
-    @Scheduled(cron = "15/30 * 18 ? * MON-FRI")
+    @Scheduled(cron = "00/7 * 18 ? * MON-FRI")
     public void xiaban(){
         List<Httpinfo> all = httpInfoJPA.findByScheduled("Y");
         Date now = new Date();
@@ -188,7 +188,7 @@ public class DakaController {
                 }
             }
             double random = Math.random() * 100L;
-            if (random < 3){
+            if (random < 2){
                 autoPost(now, httpinfo);
             }else if(Integer.valueOf(DateFormatUtil.getDateFormatStr("mm")) > 50){
                 //超过50分时间阈值则立刻打卡
@@ -200,7 +200,7 @@ public class DakaController {
     /**
      * 加班卡
      */
-    @Scheduled(cron = "15/30 * 20 ? * MON-FRI")
+    @Scheduled(cron = "00/7 * 20 ? * MON-FRI")
     public void jiaban(){
         List<Httpinfo> all = httpInfoJPA.findByScheduled("Y");
         Date now = new Date();
@@ -214,7 +214,7 @@ public class DakaController {
                 }
             }
             double random = Math.random() * 100L;
-            if (random < 3){
+            if (random < 2){
                 autoPost(now, httpinfo);
             }else if(Integer.valueOf(DateFormatUtil.getDateFormatStr("mm")) > 50){
                 //超过50分时间阈值则立刻打卡
