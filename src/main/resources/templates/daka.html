@@ -146,6 +146,15 @@
         input[type='checkbox']:checked::after{
             left:95px;/* 改变开关的位置，将其移至最右边 */
         }
+        #th4 th{
+            font-size: 30px;
+            text-align: center;
+        }
+        .tr_data3 td{
+            font-size: 20px;
+            text-align: center;
+
+        }
     </style>
 </head>
 <body>
@@ -169,6 +178,21 @@
     <div class="switch" style="text-align: right;">
         <a style="text-align: center;font-weight: bold;font-size: 26px;color: #f61818;vertical-align: middle;position: relative;bottom: 33px;">（周一至周五，早上8-9点、下午18-19点随机打卡）</a>
     </div>
+
+    <div>
+        <h1 id="title0" style="text-align: center;margin-top: 100px;">今日所有打卡详情</h1>
+    </div>
+
+    <div style="margin: 0px 50px;">
+        <table border="1" id="table0">
+            <tr id="th4">
+                <th style="width: 30%">姓名</th>
+                <th style="width: 50%">打卡时间</th>
+                <th style="width: 20%">成功</th>
+            </tr>
+        </table>
+    </div>
+
     <div>
         <h1 id="title1" style="text-align: center;font-weight: bold;font-size: 41px;margin-top: 50px;">上次打卡时间：</h1>
         <h1 id="title2" style="text-align: center;font-weight: bold;font-size: 41px;"></h1>
@@ -207,6 +231,7 @@
             //再获取用户上次打卡时间
             getHttpinfo();
         }
+        getAllinfo();
 
     });
 
@@ -295,6 +320,26 @@
             }
         })
     }
+
+    /**
+     * 获取所有人打卡信息
+     */
+    function getAllinfo(){
+        $.get('/daka/getall', function (data) {
+            $.each(data, function (index, item) {
+                var $tr = $('<tr class="tr_data3"></tr>');
+                $tr.append('<td>' + item.name + '</td>');
+                $tr.append('<td>' + item.ts + '</td>');
+                if (item.success){
+                    $tr.append('<td>' + '√' + '</td>');
+                }else {
+                    $tr.append('<td style="background: red;">' + '×' + '</td>');
+                }
+                $('#table0').append($tr);
+            })
+        })
+    }
+
 
     //打卡动作
     $('#btn_submit').click(function() {

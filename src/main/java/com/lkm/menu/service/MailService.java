@@ -22,7 +22,7 @@ public class MailService {
     //PS: 某些邮箱服务器为了增加邮箱本身密码的安全性，给 SMTP 客户端设置了独立密码（有的邮箱称为“授权码”）,
     //对于开启了独立密码的邮箱, 这里的邮箱密码必需使用这个独立密码（授权码）。
     public static String myEmailAccount = "s87586485@163.com";
-    public static String myEmailPassword = "lin87586485";
+    public static String myEmailPassword = "WXAUSPFWGXYOSNXJ";
 
     //发件人邮箱的 SMTP服务器地址,必须准确,不同邮件服务器地址不同, 一般(只是一般, 绝非绝对)格式为: smtp.xxx.com
     //网易163邮箱的 SMTP 服务器地址为: smtp.163.com
@@ -156,7 +156,7 @@ public class MailService {
         // 4.Subject: 邮件主题（标题有广告嫌疑，避免被邮件服务器误认为是滥发广告以至返回失败，请修改标题）
         message.setSubject(DateFormatUtil.getDateFormatStr("yyyy-MM-dd HH:mm:ss") + "打卡失败", "UTF-8");
         // 5.Content: 邮件正文（可以使用html标签）（内容有广告嫌疑，避免被邮件服务器误认为是滥发广告以至返回失败，请修改发送内容）
-        message.setContent(DateFormatUtil.getDateFormatStr("yyyy-MM-dd HH:mm:ss") + "<br>打卡失败，请重新抓包更换打卡报文！", "text/html;charset=UTF-8");
+        message.setContent(DateFormatUtil.getDateFormatStr("yyyy-MM-dd HH:mm:ss") + "<br>打卡失败，请重新抓包更换打卡报文！<br>更新报文地址：http://linkemin.gnway.cc/page/daka <br>抓取header内容：yht_access_token、a00", "text/html;charset=UTF-8");
         // 6.设置发件时间
         message.setSentDate(new Date());
         // 7.保存设置
