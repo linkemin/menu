@@ -33,6 +33,7 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 /**
  * Created by Linkm on 2023/1/9.
@@ -73,9 +74,10 @@ public class DakaController {
     public Object getall(){
         List<Httpinfo> all = httpInfoJPA.findByScheduled("Y");
         List<User> userAll = userJPA.findAll();
-        HashMap<Integer, String> idNameMap = new HashMap<>();
+//        HashMap<Integer, String> idNameMap = new HashMap<>();
         ArrayList<Map<Object, Object>> resultList = new ArrayList<>();
-        userAll.forEach(user -> {idNameMap.put(user.getId(), user.getUserName());});
+//        userAll.forEach(user -> {idNameMap.put(user.getId(), user.getUserName());});
+        Map<Integer, String> idNameMap = userAll.stream().collect(Collectors.toMap(User::getId, User::getUserName));
         all.forEach(httpinfo -> {
             HashMap<Object, Object> obj = new HashMap<>();
             obj.put("name", idNameMap.get(httpinfo.getUserId()));
@@ -178,7 +180,7 @@ public class DakaController {
     /**
      * 上班卡
      */
-    @Scheduled(cron = "00/7 * 8 ? * MON-FRI")
+    @Scheduled(cron = "00/8 * 8 ? * MON-FRI")
     public void shangban(){
         List<Httpinfo> all = httpInfoJPA.findByScheduled("Y");
         Date now = new Date();
@@ -192,8 +194,8 @@ public class DakaController {
                     continue;
                 }
             }
-            double random = Math.random() * 100L;
-            if (random < 2){
+            double random = Math.random() * 10000L;
+            if (Double.valueOf(random).intValue() % 200 == 1){
                 autoPost(now, httpinfo);
             }else if(Integer.valueOf(DateFormatUtil.getDateFormatStr("mm")) > 50){
                 //超过50分时间阈值则立刻打卡
@@ -231,7 +233,7 @@ public class DakaController {
     /**
      * 加班卡
      */
-    @Scheduled(cron = "00/7 * 20 ? * MON-FRI")
+//    @Scheduled(cron = "00/7 * 20 ? * MON-FRI")
     public void jiaban(){
         List<Httpinfo> all = httpInfoJPA.findByScheduled("Y");
         Date now = new Date();
@@ -511,13 +513,10 @@ public class DakaController {
 
     public static void main(String[] args) {
 
-        List<String> mailList = new ArrayList<>();
-        mailList.add("s87586485@163.com");
-        try {
-            MailService.sendFail(mailList, "");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        double d = Math.random()*100000L;
+        System.out.println(d);
+        System.out.println(Double.valueOf(d).intValue());
+        System.out.println(Double.valueOf(d).intValue()%50);
 
 
 
