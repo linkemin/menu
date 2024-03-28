@@ -180,7 +180,7 @@ public class DakaController {
     /**
      * 上班卡
      */
-    @Scheduled(cron = "00/8 * 8 ? * MON-FRI")
+    @Scheduled(cron = "01/13 15-59 8 * * MON-FRI")
     public void shangban(){
         List<Httpinfo> all = httpInfoJPA.findByScheduled("Y");
         Date now = new Date();
@@ -195,9 +195,9 @@ public class DakaController {
                 }
             }
             double random = Math.random() * 10000L;
-            if (Double.valueOf(random).intValue() % 200 == 1){
+            if (Double.valueOf(random).intValue() % 30 == 1){
                 autoPost(now, httpinfo);
-            }else if(Integer.valueOf(DateFormatUtil.getDateFormatStr("mm")) > 50){
+            }else if(Integer.valueOf(DateFormatUtil.getDateFormatStr("mm")) > 28){
                 //超过50分时间阈值则立刻打卡
                 autoPost(now, httpinfo);
             }
@@ -207,7 +207,7 @@ public class DakaController {
     /**
      * 下班卡
      */
-    @Scheduled(cron = "00/7 * 18 ? * MON-FRI")
+    @Scheduled(cron = "00/13 * 18-19 ? * MON-FRI")
     public void xiaban(){
         List<Httpinfo> all = httpInfoJPA.findByScheduled("Y");
         Date now = new Date();
@@ -220,10 +220,10 @@ public class DakaController {
                     continue;
                 }
             }
-            double random = Math.random() * 100L;
-            if (random < 2){
+            double random = Math.random() * 10000L;
+            if (Double.valueOf(random).intValue() % 160 == 1){
                 autoPost(now, httpinfo);
-            }else if(Integer.valueOf(DateFormatUtil.getDateFormatStr("mm")) > 50){
+            }else if(Integer.valueOf(DateFormatUtil.getDateFormatStr("HH")) > 18 && Integer.valueOf(DateFormatUtil.getDateFormatStr("mm")) > 50){
                 //超过50分时间阈值则立刻打卡
                 autoPost(now, httpinfo);
             }
@@ -514,9 +514,7 @@ public class DakaController {
     public static void main(String[] args) {
 
         double d = Math.random()*100000L;
-        System.out.println(d);
-        System.out.println(Double.valueOf(d).intValue());
-        System.out.println(Double.valueOf(d).intValue()%50);
+        System.out.println(Integer.valueOf(DateFormatUtil.getDateFormatStr("HH")));
 
 
 
