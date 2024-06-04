@@ -41,6 +41,9 @@ public class Httpinfo {
     @Column(name="a00")
     private String a00;
 
+    @Column(name="bark_url")
+    private String barkUrl;
+
     public Integer getId() {
         return id;
     }
@@ -115,5 +118,13 @@ public class Httpinfo {
 
     public void setA00(String a00) {
         this.a00 = a00;
+    }
+
+    public String getBarkUrl() {
+        return barkUrl;
+    }
+
+    public void setBarkUrl(String barkUrl) {
+        this.barkUrl = barkUrl;
     }
 }

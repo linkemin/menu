@@ -24,6 +24,8 @@ import org.springframework.web.bind.annotation.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
 import java.text.DateFormat;
@@ -47,6 +49,16 @@ public class DakaController {
 
     @Autowired
     UserJPA userJPA;
+
+    private static HashMap<Integer, String> weekMap = new HashMap<Integer, String>(){{
+        put(1, "一");
+        put(2, "二");
+        put(3, "三");
+        put(4, "四");
+        put(5, "五");
+        put(6, "六");
+        put(7, "七");
+    }};
 
     /**
      * 通过用户Id获取打卡信息
@@ -263,6 +275,25 @@ public class DakaController {
         if (StringUtils.isEmpty(postMsg)){
             httpinfo.setA00("");
             httpinfo.setToken("");
+            //推送打卡失败通知
+            if (!StringUtils.isEmpty(httpinfo.getBarkUrl())){
+                httpget(httpinfo.getBarkUrl() + "/打卡失败！！！" + "/请点击重新抓取报文并更新！?url=http://linkemin.gnway.cc/page/daka");
+            }
+        }else {
+            //推送打卡成功通知
+            if (!StringUtils.isEmpty(httpinfo.getBarkUrl())){
+                try {
+                    Calendar calendar = Calendar.getInstance();
+                    int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
+                    if (now.getHours()>17){
+                        httpget(httpinfo.getBarkUrl() + "/【打卡成功】星期" + weekMap.get(dayOfWeek) + "下班卡" + "/时间：" + URLEncoder.encode(httpinfo.getLasttime(), "utf-8"));
+                    }else {
+                        httpget(httpinfo.getBarkUrl() + "/【打卡成功】星期" + weekMap.get(dayOfWeek) + "上班卡" + "/时间：" + URLEncoder.encode(httpinfo.getLasttime(), "utf-8"));
+                    }
+                } catch (UnsupportedEncodingException e) {
+                    throw new RuntimeException(e);
+                }
+            }
         }
         httpInfoJPA.saveAndFlush(httpinfo);
         String mail = httpinfo.getMail();
@@ -446,77 +477,26 @@ public class DakaController {
         return msg;
     }
 
-    public String httpget(String httpinfoStr){
-        BufferedReader reader = new BufferedReader(new StringReader(httpinfoStr));
-        String msg = "";
-        String lineText;
-        String part = "1";
-        String url = "";
-        Map<String, String> headers = new HashMap<>();
-        Map<String, String> body = new HashMap<>();
-
-
-        Pattern patternUrl = Pattern.compile("http.* ");
-
+    public static String httpget(String httpinfoStr){
+        CloseableHttpClient httpClient = HttpClients.createDefault();
+        HttpGet httpGet = new HttpGet(httpinfoStr);
+        CloseableHttpResponse response = null;//执行请求
         try {
-            while ((lineText = reader.readLine()) != null) {
-                if ("1".equals(part)){
-                    Matcher matcher = patternUrl.matcher(lineText);
-                    if (matcher.find()) {
-                        url = matcher.group();
-                        url = url.trim();
-                    }
-                    part = "2";
-                    continue;
-                }else if ("2".equals(part)){
-                    if ("".equals(lineText)){
-                        part = "3";
-                        continue;
-                    }else {
-                        String[] header = lineText.split(":", 2);
-                        headers.put(header[0], header[1].trim());
-                    }
-                }else if ("3".equals(part)){
-                    String[] split = lineText.split("&");
-                    for (String s : split) {
-                        String[] split1 = s.split("=");
-                        body.put(split1[0], split1[1]);
-                    }
-                    break;
-                }
-
-            }
-
-            CloseableHttpClient httpClient = HttpClients.createDefault();
-            HttpGet httpGet = new HttpGet(url);
-            headers.forEach((key, value) -> {
-                if (!"Content-Length".equals(key)){
-                    httpGet.addHeader(key, value);
-                }
-            });
-
-            List<BasicNameValuePair> param = new ArrayList<>();
-            body.forEach((key, value) -> {
-                param.add(new BasicNameValuePair(key, value));
-            });
-
-//            UrlEncodedFormEntity formEntity = new UrlEncodedFormEntity(param, StandardCharsets.UTF_8);
-//            httpGet.setEntity(formEntity);
-            CloseableHttpResponse response = httpClient.execute(httpGet);//执行请求
+            response = httpClient.execute(httpGet);
             String result = EntityUtils.toString(response.getEntity());//获取响应内容
             return result;
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
-        return msg;
+
     }
 
     public static void main(String[] args) {
-
-        double d = Math.random()*100000L;
-        System.out.println(Integer.valueOf(DateFormatUtil.getDateFormatStr("HH")));
-
-
-
+        Date now = new Date();
+        System.out.println(now.getHours());
+        Calendar calendar = Calendar.getInstance();
+        int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
+        System.out.println("今天是星期" + weekMap.get(dayOfWeek));
     }
+
 }
