@@ -51,13 +51,13 @@ public class DakaController {
     UserJPA userJPA;
 
     private static HashMap<Integer, String> weekMap = new HashMap<Integer, String>(){{
-        put(1, "一");
-        put(2, "二");
-        put(3, "三");
-        put(4, "四");
-        put(5, "五");
-        put(6, "六");
-        put(7, "七");
+        put(2, "一");
+        put(3, "二");
+        put(4, "三");
+        put(5, "四");
+        put(6, "五");
+        put(7, "六");
+        put(1, "天");
     }};
 
     /**
